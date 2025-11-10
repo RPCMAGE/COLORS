@@ -42,6 +42,27 @@ function init() {
     updateBetAmounts();
     // Disable roll button initially
     document.getElementById('rollBtn').disabled = true;
+    initBackgroundMusic();
+}
+
+// Initialize background music
+function initBackgroundMusic() {
+    const bgMusic = document.getElementById('backgroundMusic');
+    if (bgMusic) {
+        bgMusic.volume = 0.4;
+        
+        // Try to play immediately
+        bgMusic.play().catch(() => {
+            // Autoplay blocked - start on first user interaction
+            const startMusic = () => {
+                bgMusic.play();
+                document.removeEventListener('click', startMusic);
+                document.removeEventListener('touchstart', startMusic);
+            };
+            document.addEventListener('click', startMusic);
+            document.addEventListener('touchstart', startMusic);
+        });
+    }
 }
 
 // Setup event listeners
