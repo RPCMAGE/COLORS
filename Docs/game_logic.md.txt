@@ -1,0 +1,67 @@
+# COLORS — Game Logic
+
+## Overview
+COLORS is a multi-color betting game inspired by the Filipino carnival “Perya” color game.  
+It brings nostalgic simplicity to Web3 through a degen-style, fast-paced color dice roll.
+
+Players bet on colors; three dice are rolled. Payouts depend on how many of the dice match the color(s) the player chose.
+
+---
+
+## Dice & Colors
+- There are 3 large dice.
+- Each die has 6 sides (Yellow, Orange, Pink, Blue, Green, Red).
+- Players can bet on **up to 3 colors per round**.
+
+---
+
+## Game Modes
+### Normal Mode
+- Standard mode, slower pace, players wait for all to place bets.
+- Safer multipliers, for longer sessions.
+
+| Matches | Payout |
+|----------|---------|
+| 1 color match | 0.5× |
+| 2 color matches | 1× |
+| 3 color matches | 1.69× |
+
+---
+
+### Time Attack Mode
+- Fast-paced degen mode.
+- Players have 5–10 seconds to bet.
+- If no bet is placed within the time, player skips 2 rounds.
+- Higher multipliers.
+
+| Matches | Payout |
+|----------|---------|
+| 1 color match | 0.95× – 1× |
+| 2 color matches | 1.45× |
+| 3 color matches | 1.95× (+0.5× bonus if all three dice are the same color) |
+
+---
+
+## Payout Examples
+| Bet | Dice Result | Return |
+|-----|--------------|---------|
+| 100 on Blue | 3× Blue | 195 total (100 + 95) |
+| 200 on Blue | 3× Blue | 390 total (200 + 190) |
+| 300 on Blue | 3× Blue | 585 total (300 + 285) |
+| 500 on Blue | 3× Blue | 975 total (500 + 475) |
+| 1000 on Blue | 3× Blue | 1950 total (1000 + 950) |
+
+---
+
+## Flow
+1. Player selects bet amount and up to three colors.
+2. Click **Roll**.
+3. Three dice roll with animation.
+4. Dice stop → results revealed.
+5. Winning payouts displayed.
+6. Game resets for the next round.
+
+---
+
+## Bonus
+If all three dice show the **same color** as your bet, a **+0.5×** multiplier bonus applies (rare occurrence).

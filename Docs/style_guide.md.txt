@@ -1,0 +1,35 @@
+# COLORS — Style Guide
+
+## Theme
+Futuristic + Arcade + Carnival hybrid look.  
+Bright, energetic, neon-inspired visual language.
+
+## Fonts
+- **Primary:** "Poppins", sans-serif
+- **Alternative:** "Orbitron" (for headings, futuristic style)
+
+## Color Palette
+| Element | Color | Hex |
+|----------|--------|-----|
+| Background gradient | Dark Carnival | #0b0b0b → #1a1a1a |
+| Primary Gold | Gold | #ffcc00 |
+| Accent Red | Red | #e63946 |
+| Accent Green | Green | #2a9d8f |
+| Accent Blue | Blue | #0077b6 |
+| Highlight Pink | Pink | #ff5eaf |
+
+## UI
+- Buttons: rounded-xl, glowing hover states.
+- Dice: 3D-style cubes with colored faces.
+- Table: gradient dark surface, subtle reflections.
+- Typography: bold and readable; carnival yet sleek.
+
+## Animations
+- **Dice roll:** rotate/spin 1.5s with easing.
+- **Hover:** subtle scale + glow.
+- **Win animation:** confetti or flashing border.
+- **Mode switch:** smooth fade between Normal/Time Attack.
+
+## Sounds
+- `roll.mp3` — dice rolling sound.
+- `win.mp3` — short arcade jingle.

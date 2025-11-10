@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COLORS - Arcade Betting Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header Bar -->
+    <header class="header">
+        <div class="logo">COLORS</div>
+        <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="normal">Normal</button>
+            <button class="mode-btn" data-mode="timeattack">Time Attack</button>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="game-container">
+        <!-- Dice Animation Zone -->
+        <div class="dice-zone">
+            <div class="dice-container">
+                <div class="dice" id="dice1">
+                    <div class="dice-face" data-face="yellow">Y</div>
+                    <div class="dice-face" data-face="orange">O</div>
+                    <div class="dice-face" data-face="pink">P</div>
+                    <div class="dice-face" data-face="blue">B</div>
+                    <div class="dice-face" data-face="green">G</div>
+                    <div class="dice-face" data-face="red">R</div>
+                </div>
+                <div class="dice" id="dice2">
+                    <div class="dice-face" data-face="yellow">Y</div>
+                    <div class="dice-face" data-face="orange">O</div>
+                    <div class="dice-face" data-face="pink">P</div>
+                    <div class="dice-face" data-face="blue">B</div>
+                    <div class="dice-face" data-face="green">G</div>
+                    <div class="dice-face" data-face="red">R</div>
+                </div>
+                <div class="dice" id="dice3">
+                    <div class="dice-face" data-face="yellow">Y</div>
+                    <div class="dice-face" data-face="orange">O</div>
+                    <div class="dice-face" data-face="pink">P</div>
+                    <div class="dice-face" data-face="blue">B</div>
+                    <div class="dice-face" data-face="green">G</div>
+                    <div class="dice-face" data-face="red">R</div>
+                </div>
+            </div>
+            <button class="roll-btn" id="rollBtn">ROLL</button>
+        </div>
+
+        <!-- Confetti Overlay -->
+        <div class="confetti-overlay" id="confettiOverlay"></div>
+
+        <!-- Betting Area -->
+        <div class="betting-area">
+            <h3 class="betting-title">Select Colors (Up to 3)</h3>
+            <div class="color-buttons">
+                <button class="color-btn" data-color="yellow">
+                    <span class="color-name">Yellow</span>
+                    <span class="bet-amount" data-color="yellow">0</span>
+                </button>
+                <button class="color-btn" data-color="orange">
+                    <span class="color-name">Orange</span>
+                    <span class="bet-amount" data-color="orange">0</span>
+                </button>
+                <button class="color-btn" data-color="pink">
+                    <span class="color-name">Pink</span>
+                    <span class="bet-amount" data-color="pink">0</span>
+                </button>
+                <button class="color-btn" data-color="blue">
+                    <span class="color-name">Blue</span>
+                    <span class="bet-amount" data-color="blue">0</span>
+                </button>
+                <button class="color-btn" data-color="green">
+                    <span class="color-name">Green</span>
+                    <span class="bet-amount" data-color="green">0</span>
+                </button>
+                <button class="color-btn" data-color="red">
+                    <span class="color-name">Red</span>
+                    <span class="bet-amount" data-color="red">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="bottom-bar">
+            <div class="balance-display">
+                <span class="label">Balance:</span>
+                <span class="value" id="balance">1000</span>
+            </div>
+            <div class="bet-controls">
+                <label for="betAmount">Bet Amount:</label>
+                <input type="number" id="betAmount" min="1" value="100" step="10">
+                <button class="action-btn" id="placeBetBtn">Place Bet</button>
+                <button class="action-btn" id="clearBetBtn">Clear</button>
+            </div>
+        </div>
+
+        <!-- Result Display -->
+        <div class="result-display" id="resultDisplay">
+            <div class="result-content">
+                <h3 id="resultTitle"></h3>
+                <p id="resultText"></p>
+            </div>
+        </div>
+
+        <!-- Time Attack Timer -->
+        <div class="timer-display" id="timerDisplay">
+            <div class="timer-bar">
+                <div class="timer-fill" id="timerFill"></div>
+            </div>
+            <span class="timer-text" id="timerText">10</span>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Demo showcase for COLORS</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
+

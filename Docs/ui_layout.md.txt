@@ -1,0 +1,42 @@
+# COLORS — UI Layout
+
+## Screen Structure
+[Header Bar]
+COLORS logo (left)
+Mode toggle: Normal / Time Attack (right)
+
+[Main Game Area]
+3D Dice animation zone (centered)
+Roll button below dice
+Confetti overlay for win animation
+
+[Betting Area]
+6 color buttons arranged in 2 rows of 3
+Each shows color name and current bet amount
+Player can tap multiple (up to 3)
+
+[Bottom Bar]
+Current Balance
+Bet Amount input
+"Place Bet" / "Clear Bet" / "Roll" buttons
+
+[Footer]
+Tiny text: "Demo showcase for COLORS"
+
+markdown
+Copy code
+
+## Mobile Layout
+- Stack vertically.
+- Responsive dice animation (centered, 70% screen width).
+- Swipe or tap color buttons.
+
+## States
+- Idle (no bet)
+- Betting (selecting colors)
+- Rolling (dice animation + locked buttons)
+- Result (highlighted winning colors + payout)
+
+## Additional Visual Notes
+- Use shadows & neon edge glows.
+- Soft lighting to simulate a carnival booth at night

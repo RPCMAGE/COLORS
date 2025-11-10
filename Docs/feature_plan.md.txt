@@ -1,0 +1,42 @@
+# COLORS — Feature Plan
+
+## 1. Base Demo (v0)
+Goal: Simple playable demo, no blockchain or wallet integration.
+
+Includes:
+- Normal & Time Attack modes
+- Dice animation + random results
+- Bet logic + basic balance system
+- UI interactions and sound effects
+- Responsive layout for web & mobile
+
+---
+
+## 2. Showcase Phase (v1)
+Goal: Present to crypto casino or NFT project partners.
+
+Adds:
+- Skinnable themes for partner branding
+- Leaderboard placeholder
+- “Connect Wallet” button (inactive for now)
+- Splash intro with animated COLORS logo
+
+---
+
+## 3. Future Expansion (Web3)
+Planned once the game gains traction:
+- NFT integration for rev-share eligibility
+- On-chain betting (token)
+- Airdrop and token rewards for top players
+- Shared revenue system between COLORS and partner projects
+
+---
+
+## 4. Technical Notes
+- Built with HTML + CSS + Vanilla JS (no backend yet)
+- Can later migrate to React / Next.js with on-chain logic
+- Asset formats:
+  - WebP for images
+  - SVG for icons
+  - Lottie or WebM for complex animations
+  - MP3 for sounds
