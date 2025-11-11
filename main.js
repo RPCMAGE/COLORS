@@ -9,23 +9,25 @@ const gameState = {
     timer: null,
     timerInterval: null,
     timeLeft: 10,
-    skippedRounds: 0
+    skippedRounds: 0,
+    volume: 0.4, // Default volume (40%)
+    resultsCalculated: false // Flag to prevent double calculation
 };
 
 // Color configuration
 const colors = ['yellow', 'orange', 'pink', 'blue', 'green', 'red'];
 
-// Payout multipliers
+// Payout multipliers (additive - bet + bet * multiplier per match)
+// Calculated for 5% house edge (Normal) and 3% house edge (Time Attack)
+// Probabilities: 0 matches (57.87%), 1 match (34.72%), 2 matches (6.94%), 3 matches (0.46%)
 const payouts = {
     normal: {
-        1: 0.5,
-        2: 1.0,
-        3: 1.69
+        1: 1.04,   // Per-match multiplier for 5% house edge
+        '3jackpot': 4.5  // Jackpot multiplier (all 3 dice same color)
     },
     timeattack: {
-        1: 0.95,
-        2: 1.45,
-        3: 1.95
+        1: 1.08,   // Per-match multiplier for 3% house edge
+        '3jackpot': 5.0  // Jackpot multiplier (all 3 dice same color)
     }
 };
 
@@ -37,30 +39,72 @@ const audioFiles = {
 
 // Initialize game
 function init() {
-    setupEventListeners();
-    updateBalance();
-    updateBetAmounts();
-    // Disable roll button initially
-    document.getElementById('rollBtn').disabled = true;
-    initBackgroundMusic();
+    try {
+        setupEventListeners();
+        updateBalance();
+        updateBetAmounts();
+        
+        // Disable roll button initially
+        const rollBtn = document.getElementById('rollBtn');
+        if (rollBtn) {
+            rollBtn.disabled = true;
+        }
+        
+        initBackgroundMusic();
+        setupVolumeControl();
+        
+        // Start music on first click anywhere
+        const startMusicOnce = () => {
+            const bgMusic = document.getElementById('backgroundMusic');
+            if (bgMusic && bgMusic.paused) {
+                bgMusic.play().catch(() => {});
+            }
+            document.removeEventListener('click', startMusicOnce);
+            document.removeEventListener('touchstart', startMusicOnce);
+        };
+        document.addEventListener('click', startMusicOnce, { once: true });
+        document.addEventListener('touchstart', startMusicOnce, { once: true });
+    } catch (error) {
+        console.error('Error initializing game:', error);
+    }
 }
 
 // Initialize background music
 function initBackgroundMusic() {
     const bgMusic = document.getElementById('backgroundMusic');
     if (bgMusic) {
-        bgMusic.volume = 0.4;
+        bgMusic.volume = gameState.volume;
+        bgMusic.preload = 'auto';
         
-        // Try to play immediately
+        // Try to play - will fail if autoplay is blocked (expected)
         bgMusic.play().catch(() => {
-            // Autoplay blocked - start on first user interaction
-            const startMusic = () => {
-                bgMusic.play();
-                document.removeEventListener('click', startMusic);
-                document.removeEventListener('touchstart', startMusic);
-            };
-            document.addEventListener('click', startMusic);
-            document.addEventListener('touchstart', startMusic);
+            // Autoplay blocked - this is normal, music will start on first user interaction
+        });
+    }
+}
+
+// Setup volume control
+function setupVolumeControl() {
+    const volumeSlider = document.getElementById('volumeSlider');
+    const bgMusic = document.getElementById('backgroundMusic');
+    
+    if (volumeSlider && bgMusic) {
+        // Set initial volume
+        volumeSlider.value = gameState.volume * 100;
+        
+        volumeSlider.addEventListener('input', function(e) {
+            const volume = parseFloat(e.target.value) / 100;
+            gameState.volume = volume;
+            
+            // Update background music volume
+            bgMusic.volume = volume;
+            
+            // Try to play if not already playing (for autoplay-blocked scenarios)
+            if (bgMusic.paused && volume > 0) {
+                bgMusic.play().catch(() => {
+                    // Ignore play errors - user interaction may be required
+                });
+            }
         });
     }
 }
@@ -68,24 +112,66 @@ function initBackgroundMusic() {
 // Setup event listeners
 function setupEventListeners() {
     // Mode toggle
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    modeButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (btn.dataset.mode) {
+                switchMode(btn.dataset.mode);
+            }
+        });
     });
 
-    // Color buttons
-    document.querySelectorAll('.color-btn').forEach(btn => {
-        btn.addEventListener('click', () => selectColor(btn.dataset.color));
+    // Color buttons - use direct event delegation to ensure clicks work
+    const colorButtons = document.querySelectorAll('.color-btn');
+    colorButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const color = btn.getAttribute('data-color');
+            if (color) {
+                selectColor(color);
+            }
+        });
     });
 
     // Bet controls
-    document.getElementById('betAmount').addEventListener('input', (e) => {
-        gameState.betAmount = parseInt(e.target.value) || 0;
-        updateBetAmounts();
-    });
+    const betAmountInput = document.getElementById('betAmount');
+    if (betAmountInput) {
+        betAmountInput.addEventListener('input', function(e) {
+            const value = parseInt(e.target.value) || 0;
+            gameState.betAmount = value;
+            updateBetAmounts();
+        });
+    }
 
-    document.getElementById('placeBetBtn').addEventListener('click', placeBet);
-    document.getElementById('clearBetBtn').addEventListener('click', clearBet);
-    document.getElementById('rollBtn').addEventListener('click', rollDice);
+    const placeBetBtn = document.getElementById('placeBetBtn');
+    if (placeBetBtn) {
+        placeBetBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            placeBet();
+        });
+    }
+
+    const clearBetBtn = document.getElementById('clearBetBtn');
+    if (clearBetBtn) {
+        clearBetBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            clearBet();
+        });
+    }
+
+    const rollBtn = document.getElementById('rollBtn');
+    if (rollBtn) {
+        rollBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            rollDice();
+        });
+    }
 }
 
 // Switch game mode
@@ -113,7 +199,10 @@ function switchMode(mode) {
 function selectColor(color) {
     if (gameState.isRolling) return;
 
-    const btn = document.querySelector(`[data-color="${color}"]`);
+    // Specifically target the button, not the span inside
+    const btn = document.querySelector(`.color-btn[data-color="${color}"]`);
+    if (!btn) return;
+    
     const index = gameState.selectedColors.indexOf(color);
 
     if (index > -1) {
@@ -204,6 +293,7 @@ function rollDice() {
     updateBalance();
 
     gameState.isRolling = true;
+    gameState.resultsCalculated = false; // Reset flag for new roll
     document.getElementById('rollBtn').disabled = true;
     
     // Play roll sound
@@ -232,7 +322,7 @@ function rollDice() {
         // Calculate and display results
         setTimeout(() => {
             calculateResults();
-            gameState.isRolling = false;
+            // calculateResults() sets isRolling = false internally
             document.getElementById('rollBtn').disabled = false;
             
             // Restart timer if in time attack mode
@@ -281,67 +371,143 @@ function getDiceTransform(color) {
 
 // Calculate results
 function calculateResults() {
-    const results = gameState.diceResults;
+    // Prevent double calculation - must be rolling, have colors selected, and not already calculated
+    if (gameState.resultsCalculated || !gameState.isRolling || gameState.selectedColors.length === 0) {
+        return;
+    }
+    
+    // Validate dice results exist
+    if (!gameState.diceResults || gameState.diceResults.length !== 3) {
+        gameState.isRolling = false;
+        return;
+    }
+    
+    // Mark as calculated immediately to prevent race conditions
+    gameState.resultsCalculated = true;
+    
+    // Store selected colors and bet amount before any state changes
+    const selectedColors = [...gameState.selectedColors];
+    const betAmount = gameState.betAmount;
+    
+    // Validate bet amount
+    if (betAmount <= 0 || !betAmount || isNaN(betAmount)) {
+        gameState.isRolling = false;
+        return;
+    }
+    
+    const results = [...gameState.diceResults]; // Copy to prevent mutation
     let totalWin = 0;
-    let maxMatches = 0;
+    let maxDiceMatches = 0; // Maximum dice matches for a single color
+    let colorsMatched = 0; // Number of colors that matched
     let allSame = results[0] === results[1] && results[1] === results[2];
-    let bonusEligible = false;
+    let jackpotEligible = false;
 
     // Check matches for each selected color
-    gameState.selectedColors.forEach(color => {
+    selectedColors.forEach(color => {
         const colorMatches = results.filter(r => r === color).length;
         if (colorMatches > 0) {
-            maxMatches = Math.max(maxMatches, colorMatches);
-            const multiplier = payouts[gameState.mode][colorMatches];
-            const win = gameState.betAmount * multiplier;
-            totalWin += win;
+            colorsMatched++; // Count this color as matched
+            maxDiceMatches = Math.max(maxDiceMatches, colorMatches);
             
-            // Check if this color got all 3 matches (bonus eligible)
-            if (colorMatches === 3 && allSame) {
-                bonusEligible = true;
+            // Determine if this is a jackpot (all 3 dice same color AND matches selected color)
+            const isJackpot = colorMatches === 3 && allSame && results[0] === color;
+            
+            // Calculate win: bet + (winnings for each matching die)
+            // Each matching die adds its own winnings additively
+            let win = betAmount; // Start with the bet amount
+            
+            if (isJackpot) {
+                // Jackpot: bet + (bet * jackpot multiplier)
+                win += betAmount * payouts[gameState.mode]['3jackpot'];
+                jackpotEligible = true;
+            } else {
+                // For each matching die, add the winnings for that match count
+                // multiplierPerMatch is the profit multiplier (not total return)
+                // So for each match: bet + (bet * profitMultiplier)
+                const profitMultiplierPerMatch = payouts[gameState.mode][1];
+                // Each match adds: betAmount * profitMultiplierPerMatch
+                win += betAmount * profitMultiplierPerMatch * colorMatches;
             }
+            
+            totalWin += win;
         }
     });
 
-    // Bonus for all three dice same color in time attack mode
-    if (gameState.mode === 'timeattack' && bonusEligible) {
-        const bonus = gameState.betAmount * 0.5;
-        totalWin += bonus;
-    }
-
     // Update balance
+    // totalWin represents the total return (bet + winnings) for each color
+    // Since the bet was already deducted when rolling, we add back the full totalWin
+    // The net profit shown to user is totalWin - (bet * number of colors)
+    const totalBet = betAmount * selectedColors.length;
+    const netWinnings = totalWin - totalBet;
+    
+    // Update balance atomically
     if (totalWin > 0) {
-        gameState.balance += totalWin;
+        gameState.balance += totalWin; // Add back full return (bet + winnings)
         playRandomSound('win');
         showConfetti();
-        showResult(true, totalWin, maxMatches, bonusEligible);
+        showResult(true, netWinnings, colorsMatched, maxDiceMatches, jackpotEligible);
     } else {
-        showResult(false, 0, 0, false);
+        showResult(false, 0, 0, 0, false);
     }
 
+    // Update balance display once
     updateBalance();
     
-    // Reset for next round
-    setTimeout(() => {
-        clearBet();
-        resetDice();
-        // Timer will restart after roll completes
-    }, 3000);
+    // Mark rolling as complete
+    gameState.isRolling = false;
+    
+    // Debug: Log calculation details
+    if (totalWin > 0) {
+        console.log('Win Calculation:', {
+            selectedColors: selectedColors.length,
+            betPerColor: betAmount,
+            totalBet,
+            colorsMatched,
+            maxDiceMatches,
+            totalWin,
+            netWinnings
+        });
+    }
+    
+    // Note: Dice and bet will reset when result display is dismissed (30s or OK button)
 }
 
 // Show result
-function showResult(won, winAmount, matches, bonus) {
+function showResult(won, winAmount, colorsMatched, maxDiceMatches, jackpot) {
     const resultDisplay = document.getElementById('resultDisplay');
     const resultTitle = document.getElementById('resultTitle');
     const resultText = document.getElementById('resultText');
+    const resultOkBtn = document.getElementById('resultOkBtn');
+
+    // Clear any existing timeout
+    if (resultDisplay.hideTimeout) {
+        clearTimeout(resultDisplay.hideTimeout);
+        resultDisplay.hideTimeout = null;
+    }
+
+    // Remove any existing click listeners
+    const newOkBtn = resultOkBtn.cloneNode(true);
+    resultOkBtn.parentNode.replaceChild(newOkBtn, resultOkBtn);
 
     if (won) {
         resultDisplay.classList.add('win');
-        resultTitle.textContent = 'WIN!';
-        let text = `You matched ${matches} color(s)!`;
-        text += `\nWon: ${winAmount.toFixed(2)}`;
-        if (bonus && gameState.mode === 'timeattack') {
-            text += `\n+ Bonus: ${(gameState.betAmount * 0.5).toFixed(2)}`;
+        resultTitle.textContent = jackpot ? 'JACKPOT!' : 'WIN!';
+        
+        // Create accurate match message with breakdown
+        let matchText = '';
+        if (colorsMatched === 1) {
+            matchText = `1 color matched with ${maxDiceMatches} dice!`;
+        } else {
+            matchText = `${colorsMatched} colors matched (max ${maxDiceMatches} dice)!`;
+        }
+        
+        let text = matchText;
+        text += `\nWinnings: ${winAmount >= 0 ? '+' : ''}${winAmount.toFixed(2)}`;
+        if (winAmount < 0) {
+            text += `\n(You lost on other colors you bet on)`;
+        }
+        if (jackpot) {
+            text += `\n🎰 All 3 dice matched!`;
         }
         resultText.textContent = text;
     } else {
@@ -350,10 +516,30 @@ function showResult(won, winAmount, matches, bonus) {
         resultText.textContent = 'Better luck next time!';
     }
 
-    resultDisplay.classList.add('show');
-    setTimeout(() => {
+    // Function to hide the result display and reset for next round
+    const hideResult = () => {
         resultDisplay.classList.remove('show');
-    }, 3000);
+        if (resultDisplay.hideTimeout) {
+            clearTimeout(resultDisplay.hideTimeout);
+            resultDisplay.hideTimeout = null;
+        }
+        
+        // Reset dice and clear bet after result is dismissed
+        // Only reset if not already rolling a new round
+        if (!gameState.isRolling) {
+            clearBet();
+            resetDice();
+        }
+    };
+
+    // Add click listener to OK button
+    document.getElementById('resultOkBtn').addEventListener('click', hideResult);
+
+    // Show the result display
+    resultDisplay.classList.add('show');
+
+    // Auto-hide after 30 seconds (10x longer than before)
+    resultDisplay.hideTimeout = setTimeout(hideResult, 30000);
 }
 
 // Show confetti
@@ -427,10 +613,9 @@ function playRandomSound(type) {
     
     const soundFile = sounds[Math.floor(Math.random() * sounds.length)];
     const audio = new Audio(soundFile);
-    audio.volume = 0.5;
-    audio.play().catch(err => {
+    audio.volume = gameState.volume * 0.5; // Use game volume, but slightly quieter for effects
+    audio.play().catch(() => {
         // Ignore audio play errors (user interaction required in some browsers)
-        console.log('Audio play failed:', err);
     });
 }
 
