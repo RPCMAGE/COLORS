@@ -26,7 +26,6 @@
             <div class="mode-toggle">
                 <button class="mode-btn active" data-mode="normal">Normal</button>
                 <button class="mode-btn" data-mode="timeattack">Time Attack</button>
-                <button class="mode-btn" data-mode="multiplayer" id="multiplayerBtn">Multiplayer</button>
             </div>
         </div>
     </header>
@@ -135,33 +134,6 @@
         <p>Demo showcase for COLORS</p>
     </footer>
 
-    <!-- Multiplayer Modal -->
-    <div class="multiplayer-modal" id="multiplayerModal">
-        <div class="modal-content">
-            <h2>Multiplayer Mode</h2>
-            <div id="multiplayerMenu">
-                <button class="action-btn" id="createRoomBtn">Create Room</button>
-                <button class="action-btn" id="joinRoomBtn">Join Room</button>
-                <input type="text" id="roomCodeInput" placeholder="Enter 6-digit code" maxlength="6" style="display: none;">
-                <button class="action-btn" id="confirmJoinBtn" style="display: none;">Join</button>
-            </div>
-            <div id="roomInfo" style="display: none;">
-                <h3>Room Code: <span id="roomCodeDisplay"></span></h3>
-                <div id="playerList"></div>
-                <button class="action-btn" id="startGameBtn" style="display: none;">Start Game</button>
-                <button class="action-btn" id="leaveRoomBtn">Leave Room</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Multiplayer Results Display -->
-    <div class="multiplayer-results" id="multiplayerResults" style="display: none;">
-        <h3>Round Results</h3>
-        <div id="allPlayersResults"></div>
-        <button class="action-btn" id="nextRoundBtn">Next Round</button>
-    </div>
-
-    <script src="/socket.io/socket.io.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

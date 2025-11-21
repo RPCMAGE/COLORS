@@ -1,6 +1,6 @@
 // Game State
 const gameState = {
-    mode: 'normal', // 'normal', 'timeattack', or 'multiplayer'
+    mode: 'normal', // 'normal' or 'timeattack'
     balance: 1000,
     selectedColors: [],
     betAmount: 100,
@@ -11,14 +11,7 @@ const gameState = {
     timeLeft: 10,
     skippedRounds: 0,
     volume: 0.4, // Default volume (40%)
-    resultsCalculated: false, // Flag to prevent double calculation
-    // Multiplayer state
-    socket: null,
-    roomCode: null,
-    isHost: false,
-    players: [],
-    multiplayerTimer: null,
-    multiplayerTimeLeft: 60
+    resultsCalculated: false // Flag to prevent double calculation
 };
 
 // Color configuration
@@ -48,7 +41,6 @@ const audioFiles = {
 function init() {
     try {
         setupEventListeners();
-        setupMultiplayer();
         updateBalance();
         updateBetAmounts();
         
@@ -185,9 +177,6 @@ function setupEventListeners() {
 // Switch game mode
 function switchMode(mode) {
     if (gameState.isRolling) return;
-    if (gameState.mode === 'multiplayer') {
-        leaveMultiplayerRoom();
-    }
     
     gameState.mode = mode;
     document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -254,11 +243,6 @@ function placeBet() {
     document.getElementById('rollBtn').disabled = false;
     updateBetAmounts();
     
-    // In multiplayer, send ready status
-    if (gameState.mode === 'multiplayer') {
-        sendPlayerReady();
-    }
-    
     // Stop timer if in time attack mode
     if (gameState.mode === 'timeattack') {
         stopTimer();
@@ -292,11 +276,6 @@ function updateBetAmounts() {
 // Roll dice
 function rollDice() {
     if (gameState.isRolling) return;
-    if (gameState.mode === 'multiplayer') {
-        // In multiplayer, roll is controlled by server
-        return;
-    }
-    
     if (gameState.selectedColors.length === 0) {
         alert('Please place a bet first!');
         return;
@@ -683,329 +662,6 @@ function stopTimer() {
     document.getElementById('timerDisplay').classList.remove('active');
 }
 
-// ==================== MULTIPLAYER FUNCTIONS ====================
-
-// Setup multiplayer socket connection
-function setupMultiplayer() {
-    // Only connect if socket.io is available
-    if (typeof io !== 'undefined') {
-        gameState.socket = io();
-        setupMultiplayerEvents();
-    }
-}
-
-// Setup multiplayer event listeners
-function setupMultiplayerEvents() {
-    if (!gameState.socket) return;
-
-    gameState.socket.on('roomCreated', (roomCode) => {
-        gameState.roomCode = roomCode;
-        gameState.isHost = true;
-        showRoomInfo(roomCode);
-    });
-
-    gameState.socket.on('joinError', (error) => {
-        alert(error);
-    });
-
-    gameState.socket.on('roomJoined', (roomCode) => {
-        gameState.roomCode = roomCode;
-        gameState.isHost = false;
-        showRoomInfo(roomCode);
-    });
-
-    gameState.socket.on('roomUpdate', (room) => {
-        gameState.players = room.players;
-        updatePlayerList(room.players);
-        if (gameState.isHost && room.players.length > 0) {
-            const startBtn = document.getElementById('startGameBtn');
-            if (startBtn) startBtn.style.display = 'block';
-        }
-    });
-
-    gameState.socket.on('gameStarted', (room) => {
-        gameState.mode = 'multiplayer';
-        hideMultiplayerModal();
-        startMultiplayerBetting(room);
-    });
-
-    gameState.socket.on('timerUpdate', (timeLeft) => {
-        gameState.multiplayerTimeLeft = timeLeft;
-        updateMultiplayerTimer();
-    });
-
-    gameState.socket.on('diceRolled', (diceResults, room) => {
-        gameState.diceResults = diceResults;
-        showMultiplayerDiceResults(diceResults);
-        calculateMultiplayerResults(room);
-    });
-}
-
-// Show multiplayer modal
-function showMultiplayerModal() {
-    const modal = document.getElementById('multiplayerModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        const menu = document.getElementById('multiplayerMenu');
-        const info = document.getElementById('roomInfo');
-        if (menu) menu.style.display = 'block';
-        if (info) info.style.display = 'none';
-    }
-}
-
-// Hide multiplayer modal
-function hideMultiplayerModal() {
-    const modal = document.getElementById('multiplayerModal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-// Create room
-function createRoom() {
-    if (gameState.socket) {
-        gameState.socket.emit('createRoom');
-    }
-}
-
-// Join room
-function joinRoom(code) {
-    if (gameState.socket && code && code.length === 6) {
-        gameState.socket.emit('joinRoom', code);
-    } else {
-        alert('Please enter a valid 6-digit code');
-    }
-}
-
-// Show room info
-function showRoomInfo(roomCode) {
-    const menu = document.getElementById('multiplayerMenu');
-    const info = document.getElementById('roomInfo');
-    const codeDisplay = document.getElementById('roomCodeDisplay');
-    if (menu) menu.style.display = 'none';
-    if (info) info.style.display = 'block';
-    if (codeDisplay) codeDisplay.textContent = roomCode;
-}
-
-// Update player list
-function updatePlayerList(players) {
-    const playerList = document.getElementById('playerList');
-    if (playerList) {
-        playerList.innerHTML = '<h4>Players:</h4>';
-        players.forEach((player, index) => {
-            const div = document.createElement('div');
-            div.textContent = `${player.name || 'Player ' + (index + 1)} ${player.ready ? '✓ Ready' : '...'}`;
-            playerList.appendChild(div);
-        });
-    }
-}
-
-// Start multiplayer game
-function startMultiplayerGame() {
-    if (gameState.socket && gameState.roomCode) {
-        gameState.socket.emit('startGame', gameState.roomCode);
-    }
-}
-
-// Start multiplayer betting phase
-function startMultiplayerBetting(room) {
-    gameState.multiplayerTimeLeft = room.timeLeft || 60;
-    updateMultiplayerTimer();
-    
-    // Show multiplayer timer
-    const timerDisplay = document.getElementById('timerDisplay');
-    if (timerDisplay) {
-        timerDisplay.classList.add('active');
-    }
-    
-    // Clear previous bet
-    clearBet();
-    gameState.isRolling = false;
-    const rollBtn = document.getElementById('rollBtn');
-    if (rollBtn) rollBtn.disabled = true;
-}
-
-// Update multiplayer timer display
-function updateMultiplayerTimer() {
-    const timerText = document.getElementById('timerText');
-    const timerFill = document.getElementById('timerFill');
-    if (timerText) {
-        timerText.textContent = gameState.multiplayerTimeLeft;
-    }
-    if (timerFill) {
-        timerFill.style.width = (gameState.multiplayerTimeLeft / 60 * 100) + '%';
-    }
-}
-
-// Player ready (bet placed)
-function sendPlayerReady() {
-    if (gameState.socket && gameState.roomCode && gameState.selectedColors.length > 0) {
-        const betData = {
-            selectedColors: [...gameState.selectedColors],
-            betAmount: gameState.betAmount
-        };
-        gameState.socket.emit('playerReady', gameState.roomCode, betData);
-    }
-}
-
-// Show dice results for multiplayer
-function showMultiplayerDiceResults(diceResults) {
-    const diceElements = document.querySelectorAll('.dice');
-    diceElements.forEach((die) => {
-        die.classList.add('rolling');
-    });
-
-    setTimeout(() => {
-        diceElements.forEach((die, index) => {
-            die.classList.remove('rolling');
-            showDiceResult(die, diceResults[index]);
-        });
-    }, 1500);
-}
-
-// Calculate multiplayer results
-function calculateMultiplayerResults(room) {
-    // Deduct bet if not already deducted
-    if (gameState.selectedColors.length > 0) {
-        const totalBet = gameState.betAmount * gameState.selectedColors.length;
-        if (totalBet <= gameState.balance) {
-            gameState.balance -= totalBet;
-            updateBalance();
-        }
-    }
-    
-    // Calculate your own results
-    calculateResults();
-    
-    // Show all players' results
-    showMultiplayerResults(room);
-}
-
-// Show multiplayer results
-function showMultiplayerResults(room) {
-    const resultsDiv = document.getElementById('multiplayerResults');
-    const allResultsDiv = document.getElementById('allPlayersResults');
-    
-    if (!resultsDiv || !allResultsDiv) return;
-    
-    allResultsDiv.innerHTML = '';
-    
-    room.players.forEach(player => {
-        if (player.betData && player.betData.selectedColors) {
-            const playerDiv = document.createElement('div');
-            playerDiv.className = 'player-result';
-            
-            // Calculate matches per color
-            const colorMatches = {};
-            player.betData.selectedColors.forEach(color => {
-                colorMatches[color] = gameState.diceResults.filter(c => c === color).length;
-            });
-            
-            const totalMatches = Object.values(colorMatches).reduce((a, b) => a + b, 0);
-            const mode = 'normal'; // Multiplayer uses normal mode payouts
-            const multiplier = payouts[mode][1];
-            const jackpotMultiplier = payouts[mode]['3jackpot'];
-            
-            // Calculate winnings
-            let winAmount = 0;
-            if (totalMatches > 0) {
-                winAmount = player.betData.betAmount;
-                Object.values(colorMatches).forEach(matches => {
-                    if (matches === 3) {
-                        winAmount += player.betData.betAmount * jackpotMultiplier;
-                    } else if (matches > 0) {
-                        winAmount += player.betData.betAmount * multiplier * matches;
-                    }
-                });
-                winAmount -= player.betData.betAmount * player.betData.selectedColors.length;
-            } else {
-                winAmount = -player.betData.betAmount * player.betData.selectedColors.length;
-            }
-            
-            const isYou = player.id === gameState.socket.id;
-            const result = winAmount > 0 ? 'WIN' : 'LOSS';
-            const color = winAmount > 0 ? 'var(--green)' : 'var(--red)';
-            
-            playerDiv.innerHTML = `
-                <strong style="color: ${isYou ? 'var(--gold)' : '#fff'}">${isYou ? 'You' : (player.name || 'Player')}:</strong> 
-                <span style="color: ${color}">${result} ${winAmount > 0 ? '+' : ''}${winAmount}</span>
-                ${totalMatches > 0 ? `(${totalMatches} match${totalMatches > 1 ? 'es' : ''})` : ''}
-            `;
-            
-            allResultsDiv.appendChild(playerDiv);
-        }
-    });
-    
-    resultsDiv.style.display = 'block';
-}
-
-// Leave multiplayer room
-function leaveMultiplayerRoom() {
-    if (gameState.socket && gameState.roomCode) {
-        gameState.socket.emit('leaveRoom', gameState.roomCode);
-    }
-    gameState.roomCode = null;
-    gameState.isHost = false;
-    gameState.players = [];
-    if (gameState.mode === 'multiplayer') {
-        gameState.mode = 'normal';
-    }
-    hideMultiplayerModal();
-}
-
-// Setup multiplayer UI event listeners
-function setupMultiplayerUI() {
-    const createBtn = document.getElementById('createRoomBtn');
-    const joinBtn = document.getElementById('joinRoomBtn');
-    const confirmJoinBtn = document.getElementById('confirmJoinBtn');
-    const startGameBtn = document.getElementById('startGameBtn');
-    const leaveBtn = document.getElementById('leaveRoomBtn');
-    const nextRoundBtn = document.getElementById('nextRoundBtn');
-    const roomCodeInput = document.getElementById('roomCodeInput');
-
-    if (createBtn) {
-        createBtn.addEventListener('click', createRoom);
-    }
-
-    if (joinBtn) {
-        joinBtn.addEventListener('click', () => {
-            if (roomCodeInput) roomCodeInput.style.display = 'block';
-            if (confirmJoinBtn) confirmJoinBtn.style.display = 'block';
-        });
-    }
-
-    if (confirmJoinBtn) {
-        confirmJoinBtn.addEventListener('click', () => {
-            const code = roomCodeInput ? roomCodeInput.value.trim() : '';
-            joinRoom(code);
-        });
-    }
-
-    if (startGameBtn) {
-        startGameBtn.addEventListener('click', startMultiplayerGame);
-    }
-
-    if (leaveBtn) {
-        leaveBtn.addEventListener('click', () => {
-            leaveMultiplayerRoom();
-            hideMultiplayerModal();
-        });
-    }
-
-    if (nextRoundBtn) {
-        nextRoundBtn.addEventListener('click', () => {
-            const resultsDiv = document.getElementById('multiplayerResults');
-            if (resultsDiv) resultsDiv.style.display = 'none';
-            if (gameState.isHost) {
-                startMultiplayerGame();
-            }
-        });
-    }
-}
-
 // Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-    init();
-    setupMultiplayerUI();
-});
+document.addEventListener('DOMContentLoaded', init);
 

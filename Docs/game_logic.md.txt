@@ -1,87 +1,67 @@
 # COLORS — Game Logic
 
 ## Overview
-COLORS is a multi-color betting game inspired by the Filipino “Perya” color game.  
-Players bet on up to three colors, and three colored dice are rolled.  
-Winnings depend on how many dice show the colors you bet on.
+COLORS is a multi-color betting game inspired by the Filipino carnival “Perya” color game.  
+It brings nostalgic simplicity to Web3 through a degen-style, fast-paced color dice roll.
 
-The game is fast, simple, and designed to give satisfying rewards even on small wins.
+Players bet on colors; three dice are rolled. Payouts depend on how many of the dice match the color(s) the player chose.
 
 ---
 
-## 🎲 Dice & Colors
-- 3 large dice, each with 6 sides: **Yellow, Orange, Pink, Blue, Green, Red**.  
+## Dice & Colors
+- There are 3 large dice.
+- Each die has 6 sides (Yellow, Orange, Pink, Blue, Green, Red).
 - Players can bet on **up to 3 colors per round**.
-- Each color bet is independent (e.g. 100 on Green, 50 on Red).
 
 ---
 
-## ⚙️ Game Modes
-
+## Game Modes
 ### Normal Mode
-Slower, standard mode — players have time to bet before the roll.  
-Rewards are moderate and balanced.
+- Standard mode, slower pace, players wait for all to place bets.
+- Safer multipliers, for longer sessions.
 
-| Matches | Added Multiplier | Example Return (100 bet) | Notes |
-|----------|------------------|---------------------------|--------|
-| 1 color match | +0.45× | 145 | Small win |
-| 2 same colors | +0.95× | 195 | Moderate win |
-| 3 colors (mixed match) | +1.69× | 269 | Strong win |
-| 3 of the same color (jackpot) | **+2.25×** | **325** | Rare big win |
-
-> 🔹 Multipliers are **additive** — you keep your bet + earn the multiplier on top.  
-> So even a small win feels rewarding rather than a net loss.
+| Matches | Payout |
+|----------|---------|
+| 1 color match | 0.5× |
+| 2 color matches | 1× |
+| 3 color matches | 1.69× |
 
 ---
 
 ### Time Attack Mode
-Fast-paced and high-risk.  
-Players get **5–10 seconds** to place bets.  
-If no bet is placed in time → skip 2 rounds.  
-Rewards are slightly higher to match the urgency.
+- Fast-paced degen mode.
+- Players have 5–10 seconds to bet.
+- If no bet is placed within the time, player skips 2 rounds.
+- Higher multipliers.
 
-| Matches | Added Multiplier | Example Return (100 bet) |
-|----------|------------------|---------------------------|
-| 1 color match | +0.55× | 155 |
-| 2 same colors | +1.05× | 205 |
-| 3 colors (mixed match) | +1.95× | 295 |
-| 3 of the same color (jackpot) | **+2.55×** | **355** |
-
----
-
-## 💰 Example Calculations
-
-| Bet | Matches | Multiplier | Calculation | Total Return |
-|------|----------|-------------|-------------|---------------|
-| 100 on Green | 1 match | +0.45× | 100 + (100×0.45) | **145** |
-| 150 on Green | 2 matches | +0.95× | 150 + (150×0.95) | **292.5** |
-| 200 on Green | 3 matches (mixed) | +1.69× | 200 + (200×1.69) | **538** |
-| 200 on Green | 3 of the same color | +2.25× | 200 + (200×2.25) | **650** ✅ |
-| 200 on Green (Time Attack) | 3 of same color | +2.55× | 200 + (200×2.55) | **710** 💥 |
+| Matches | Payout |
+|----------|---------|
+| 1 color match | 0.95× – 1× |
+| 2 color matches | 1.45× |
+| 3 color matches | 1.95× (+0.5× bonus if all three dice are the same color) |
 
 ---
 
-## 🕹️ Game Flow
-1. Player selects bet amount and 1–3 colors.  
-2. Press **Roll** to start.  
-3. Dice animate (~1.5 seconds).  
-4. Results displayed → winnings calculated.  
-5. Balance updates automatically.  
-6. New round starts.
+## Payout Examples
+| Bet | Dice Result | Return |
+|-----|--------------|---------|
+| 100 on Blue | 3× Blue | 195 total (100 + 95) |
+| 200 on Blue | 3× Blue | 390 total (200 + 190) |
+| 300 on Blue | 3× Blue | 585 total (300 + 285) |
+| 500 on Blue | 3× Blue | 975 total (500 + 475) |
+| 1000 on Blue | 3× Blue | 1950 total (1000 + 950) |
 
 ---
 
-## 🧮 Implementation Example
-```js
-function calculatePayout(bet, matches, mode, allSameColor = false) {
-  const multipliers = {
-    normal: { 1: 0.45, 2: 0.95, 3: 1.69 },
-    attack: { 1: 0.55, 2: 1.05, 3: 1.95 }
-  };
-  
-  let added = multipliers[mode][matches] || 0;
-  if (allSameColor && matches === 3) {
-    added += (mode === "attack") ? 0.6 : 0.56; // jackpot bonus bump
-  }
-  return bet * (1 + added);
-}
+## Flow
+1. Player selects bet amount and up to three colors.
+2. Click **Roll**.
+3. Three dice roll with animation.
+4. Dice stop → results revealed.
+5. Winning payouts displayed.
+6. Game resets for the next round.
+
+---
+
+## Bonus
+If all three dice show the **same color** as your bet, a **+0.5×** multiplier bonus applies (rare occurrence).
