@@ -1,0 +1,13 @@
+{
+  "name": "colors-game",
+  "version": "1.0.0",
+  "description": "COLORS arcade betting game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "socket.io": "^4.5.4"
+  }
+}
+
