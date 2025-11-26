@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="chat.css">
+    <link rel="stylesheet" href="leaderboard.css">
 </head>
 <body>
     <!-- Background Music -->
@@ -134,6 +136,64 @@
         <p>Demo showcase for COLORS</p>
     </footer>
 
+    <!-- Chat Module -->
+    <button class="chat-toggle-btn" id="chatToggleBtn" title="Toggle Chat">💬</button>
+    
+    <div class="chat-username-modal" id="chatUsernameModal">
+        <div class="chat-username-modal-content">
+            <h3>Choose Your Username</h3>
+            <p>Pick a username to start chatting with other players!</p>
+            <input type="text" id="chatUsernameInput" class="chat-username-input" placeholder="Enter username (max 20 chars)" maxlength="20">
+            <button class="chat-username-submit" onclick="window.chatModule.setUsername()">Start Chatting</button>
+        </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <span class="chat-title">💬 Chat</span>
+            <button class="chat-close" onclick="window.chatModule.toggleChat()">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-container">
+            <input type="text" id="chatMessageInput" class="chat-input" placeholder="Type a message..." maxlength="500">
+            <button class="chat-send-btn" onclick="window.chatModule.sendMessage()">Send</button>
+        </div>
+    </div>
+    
+    <script>
+        // Allow Enter key to send chat messages and setup toggle button
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatInput = document.getElementById('chatMessageInput');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && window.chatModule) {
+                        window.chatModule.sendMessage();
+                    }
+                });
+            }
+            
+            const chatToggleBtn = document.getElementById('chatToggleBtn');
+            if (chatToggleBtn && window.chatModule) {
+                chatToggleBtn.addEventListener('click', function() {
+                    window.chatModule.toggleChat();
+                });
+            }
+        });
+    </script>
+
+    <!-- Leaderboard Module -->
+    <button class="leaderboard-toggle-btn" id="leaderboardToggleBtn" onclick="window.leaderboardModule.toggleLeaderboard()">🏆 Leaderboard</button>
+    
+    <div class="leaderboard-container" id="leaderboardContainer">
+        <div class="leaderboard-header">
+            <span class="leaderboard-title">🏆 Top Winners</span>
+            <button class="leaderboard-close" onclick="window.leaderboardModule.toggleLeaderboard()">×</button>
+        </div>
+        <div class="leaderboard-list" id="leaderboardList"></div>
+    </div>
+
+    <script src="chat.js"></script>
+    <script src="leaderboard.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

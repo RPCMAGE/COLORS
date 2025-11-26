@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "api/chat.js": {
+      "maxDuration": 10
+    },
+    "api/leaderboard.js": {
+      "maxDuration": 10
+    }
+  }
+}
+

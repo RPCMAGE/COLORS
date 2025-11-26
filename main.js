@@ -446,6 +446,14 @@ function calculateResults() {
         playRandomSound('win');
         showConfetti();
         showResult(true, netWinnings, colorsMatched, maxDiceMatches, jackpotEligible);
+        
+        // Update leaderboard if user has a username (disconnected integration)
+        if (window.leaderboardModule && typeof window.leaderboardModule.updateWinnings === 'function') {
+            const chatUsername = localStorage.getItem('chatUsername');
+            if (chatUsername) {
+                window.leaderboardModule.updateWinnings(chatUsername, netWinnings);
+            }
+        }
     } else {
         showResult(false, 0, 0, 0, false);
     }
