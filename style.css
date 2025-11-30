@@ -38,14 +38,14 @@ body {
 }
 
 .logo {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 2rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--gold), var(--pink));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+    height: 60px;
+    width: auto;
+    max-width: 300px;
+    object-fit: contain;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
 }
 
 .header-controls {
@@ -579,7 +579,7 @@ body {
     }
 
     .logo {
-        font-size: 1.5rem;
+        height: 40px;
     }
 
     .dice-container {
