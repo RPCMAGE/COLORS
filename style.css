@@ -151,7 +151,7 @@ body {
 .game-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 9rem 2rem 2rem 2rem;
+    padding: 11rem 2rem 2rem 2rem;
     position: relative;
     background-image: url('Assets/Images/Colors Screen.png');
     background-size: 100% 100%;
