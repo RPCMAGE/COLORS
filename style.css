@@ -154,10 +154,11 @@ body {
     padding: 2rem;
     position: relative;
     background-image: url('Assets/Images/Colors Screen.png');
-    background-size: contain;
+    background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
-    min-height: 600px;
+    min-height: 800px;
+    background-color: transparent;
 }
 
 /* Dice Zone */
