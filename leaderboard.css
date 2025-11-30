@@ -2,7 +2,7 @@
 
 .leaderboard-container {
     position: fixed;
-    top: 100px;
+    top: 180px;
     left: 20px;
     width: 300px;
     background: rgba(26, 26, 26, 0.95);
@@ -113,7 +113,7 @@
 
 .leaderboard-toggle-btn {
     position: fixed;
-    top: 100px;
+    top: 180px;
     left: 20px;
     padding: 0.8rem 1.5rem;
     background: rgba(255, 204, 0, 0.2);
