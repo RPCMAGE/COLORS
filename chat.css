@@ -222,6 +222,23 @@
     box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+    .chat-container {
+        right: 10px;
+        left: 10px;
+        bottom: 80px;
+        width: auto;
+        max-width: none;
+        max-height: 60vh;
+    }
+
+    .chat-toggle-btn {
+        bottom: 16px;
+        right: 16px;
+    }
+}
+
 .chat-username-submit {
     padding: 0.8rem 2rem;
     background: var(--gold, #ffcc00);
