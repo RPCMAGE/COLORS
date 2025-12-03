@@ -11,49 +11,46 @@
     <link rel="stylesheet" href="chat.css">
     <link rel="stylesheet" href="leaderboard.css">
     <!-- Buffer Polyfill (required for Solana Web3.js in browser) -->
-    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
     <script>
         // Make Buffer available globally for Solana Web3.js
+        // The buffer library exposes Buffer globally, but we ensure it's available
         (function() {
-            // Wait for buffer to load
             function setupBuffer() {
+                // Check multiple possible locations for Buffer
+                let BufferObj = null;
+                
                 if (typeof Buffer !== 'undefined') {
-                    window.Buffer = Buffer;
+                    BufferObj = Buffer;
+                } else if (typeof window.Buffer !== 'undefined') {
+                    BufferObj = window.Buffer;
                 } else if (typeof buffer !== 'undefined' && buffer.Buffer) {
-                    window.Buffer = buffer.Buffer;
-                } else {
-                    // Fallback: create a minimal Buffer polyfill
-                    window.Buffer = {
-                        from: function(data, encoding) {
-                            if (typeof data === 'string') {
-                                const bytes = new Uint8Array(data.length);
-                                for (let i = 0; i < data.length; i++) {
-                                    bytes[i] = data.charCodeAt(i);
-                                }
-                                return bytes;
-                            }
-                            return new Uint8Array(data);
-                        },
-                        isBuffer: function(obj) {
-                            return obj instanceof Uint8Array;
-                        }
-                    };
+                    BufferObj = buffer.Buffer;
+                } else if (typeof globalThis !== 'undefined' && globalThis.Buffer) {
+                    BufferObj = globalThis.Buffer;
                 }
                 
-                // Also set global Buffer for modules that check for it
-                if (typeof global === 'undefined') {
-                    window.global = window;
-                }
-                if (typeof global.Buffer === 'undefined' && typeof window.Buffer !== 'undefined') {
-                    global.Buffer = window.Buffer;
+                if (BufferObj) {
+                    window.Buffer = BufferObj;
+                    if (typeof global === 'undefined') {
+                        window.global = window;
+                    }
+                    global.Buffer = BufferObj;
+                    if (typeof globalThis !== 'undefined') {
+                        globalThis.Buffer = BufferObj;
+                    }
+                } else {
+                    console.error('Buffer polyfill failed to load');
                 }
             }
             
-            // Try immediately
+            // Try immediately (buffer should be loaded by now)
             setupBuffer();
             
-            // Also try after a short delay in case buffer loads asynchronously
-            setTimeout(setupBuffer, 100);
+            // Also try after scripts load
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setupBuffer);
+            }
         })();
     </script>
     <!-- Solana Web3.js -->
