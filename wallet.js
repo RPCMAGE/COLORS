@@ -152,6 +152,21 @@ class WalletManager {
                 }
             }
             
+            // Ensure Solana Web3.js is loaded and PublicKey is available
+            if (!this.solanaWeb3 || !this.PublicKey) {
+                const web3Loaded = await this.waitForSolanaWeb3();
+                if (!web3Loaded) {
+                    throw new Error('Solana Web3.js library not loaded');
+                }
+                
+                // Extract PublicKey from solanaWeb3
+                const { PublicKey } = this.solanaWeb3;
+                if (!PublicKey) {
+                    throw new Error('PublicKey not available in Solana Web3.js');
+                }
+                this.PublicKey = PublicKey;
+            }
+            
             if (!this.wallet) {
                 const initialized = await this.init();
                 if (!initialized) {
@@ -159,6 +174,17 @@ class WalletManager {
                     if (typeof window.solana !== 'undefined') {
                         if (window.solana.isPhantom || typeof window.solana.connect === 'function') {
                             this.wallet = window.solana;
+                            // Also set up connection if not already done
+                            if (!this.connection) {
+                                const { Connection } = this.solanaWeb3;
+                                const network = 'devnet';
+                                this.connection = new Connection(
+                                    network === 'mainnet-beta' 
+                                        ? 'https://api.mainnet-beta.solana.com'
+                                        : 'https://api.devnet.solana.com',
+                                    'confirmed'
+                                );
+                            }
                         } else {
                             throw new Error('Wallet not available. Please install Phantom wallet.');
                         }
