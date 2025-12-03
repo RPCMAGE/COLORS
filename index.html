@@ -10,6 +10,26 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="chat.css">
     <link rel="stylesheet" href="leaderboard.css">
+    <!-- Solana Web3.js -->
+    <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
+    <script>
+        // Expose Solana Web3.js globally
+        window.addEventListener('load', function() {
+            if (typeof solanaWeb3 !== 'undefined') {
+                window.solanaWeb3 = solanaWeb3;
+            } else if (typeof window.solanaWeb3 === 'undefined') {
+                // Fallback: try to load from CDN
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.js';
+                script.onload = function() {
+                    if (typeof solanaWeb3 !== 'undefined') {
+                        window.solanaWeb3 = solanaWeb3;
+                    }
+                };
+                document.head.appendChild(script);
+            }
+        });
+    </script>
 </head>
 <body>
     <!-- Background Music -->
@@ -19,8 +39,18 @@
 
     <!-- Header Bar -->
     <header class="header">
+        <!-- Game Mode Selector (Demo/Solana) -->
+        <div class="game-mode-selector">
+            <button class="game-mode-btn active" data-game-mode="demo" id="demoModeBtn">Demo</button>
+            <button class="game-mode-btn" data-game-mode="solana" id="solanaModeBtn">Solana</button>
+        </div>
         <img src="Assets/Images/logo.gif" alt="COLORS" class="logo">
         <div class="header-controls">
+            <!-- Wallet Connection Status (Solana Mode Only) -->
+            <div class="wallet-status" id="walletStatus" style="display: none;">
+                <span class="wallet-address" id="walletAddress"></span>
+                <button class="wallet-connect-btn" id="walletConnectBtn">Connect Wallet</button>
+            </div>
             <div class="volume-control">
                 <label for="volumeSlider" class="volume-label">🔊</label>
                 <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="40" step="1">
@@ -106,7 +136,7 @@
                 <span class="value" id="balance">1000</span>
             </div>
             <div class="bet-controls">
-                <label for="betAmount">Bet Amount:</label>
+                <label for="betAmount">Bet Amount <span id="betCurrency">(points)</span>:</label>
                 <input type="number" id="betAmount" min="1" value="100" step="10">
                 <button class="action-btn" id="placeBetBtn">Place Bet</button>
                 <button class="action-btn" id="clearBetBtn">Clear</button>
@@ -192,9 +222,17 @@
         <div class="leaderboard-list" id="leaderboardList"></div>
     </div>
 
+    <script src="wallet.js"></script>
+    <script src="solana-betting.js"></script>
     <script src="chat.js"></script>
     <script src="leaderboard.js"></script>
     <script src="main.js"></script>
+    <script>
+        // Initialize Solana Web3.js global
+        if (typeof solanaWeb3 !== 'undefined') {
+            window.solanaWeb3 = solanaWeb3;
+        }
+    </script>
 </body>
 </html>
 

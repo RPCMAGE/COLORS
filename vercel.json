@@ -5,6 +5,9 @@
     },
     "api/leaderboard.js": {
       "maxDuration": 10
+    },
+    "api/payout.js": {
+      "maxDuration": 30
     }
   }
 }

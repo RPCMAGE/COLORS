@@ -1,0 +1,10 @@
+{
+  "name": "colors-game",
+  "version": "1.0.0",
+  "description": "COLORS - Arcade Betting Game with Solana Integration",
+  "type": "module",
+  "dependencies": {
+    "@solana/web3.js": "^1.87.6"
+  }
+}
+

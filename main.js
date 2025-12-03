@@ -1,5 +1,6 @@
 // Game State
 const gameState = {
+    gameMode: 'demo', // 'demo' or 'solana'
     mode: 'normal', // 'normal' or 'timeattack'
     balance: 1000,
     selectedColors: [],
@@ -109,9 +110,146 @@ function setupVolumeControl() {
     }
 }
 
+// Setup game mode selector (Demo/Solana)
+function setupGameModeSelector() {
+    const demoBtn = document.getElementById('demoModeBtn');
+    const solanaBtn = document.getElementById('solanaModeBtn');
+    const walletStatus = document.getElementById('walletStatus');
+    const walletConnectBtn = document.getElementById('walletConnectBtn');
+    const walletAddress = document.getElementById('walletAddress');
+
+    if (demoBtn) {
+        demoBtn.addEventListener('click', () => switchGameMode('demo'));
+    }
+    if (solanaBtn) {
+        solanaBtn.addEventListener('click', () => switchGameMode('solana'));
+    }
+    if (walletConnectBtn) {
+        walletConnectBtn.addEventListener('click', handleWalletConnect);
+    }
+
+    // Initialize wallet manager and listen for state changes
+    if (window.walletManager) {
+        window.walletManager.onStateChange((state) => {
+            updateWalletUI(state);
+        });
+    }
+
+    // Set initial mode
+    switchGameMode('demo');
+}
+
+// Switch between Demo and Solana modes
+function switchGameMode(mode) {
+    if (gameState.isRolling) {
+        alert('Please wait for the current roll to finish');
+        return;
+    }
+
+    // Clear any existing bet when switching modes
+    if (gameState.selectedColors.length > 0) {
+        clearBet();
+    }
+
+    gameState.gameMode = mode;
+
+    // Update UI
+    const demoBtn = document.getElementById('demoModeBtn');
+    const solanaBtn = document.getElementById('solanaModeBtn');
+    const walletStatus = document.getElementById('walletStatus');
+
+    if (demoBtn) demoBtn.classList.toggle('active', mode === 'demo');
+    if (solanaBtn) solanaBtn.classList.toggle('active', mode === 'solana');
+    if (walletStatus) walletStatus.style.display = mode === 'solana' ? 'flex' : 'none';
+
+    if (mode === 'demo') {
+        // Reset to demo balance
+        gameState.balance = 1000;
+        gameState.betAmount = 100;
+        const betAmountInput = document.getElementById('betAmount');
+        if (betAmountInput) {
+            betAmountInput.value = 100;
+            betAmountInput.min = '1';
+            betAmountInput.step = '10';
+        }
+        const betCurrency = document.getElementById('betCurrency');
+        if (betCurrency) betCurrency.textContent = '(points)';
+        updateBalance();
+    } else {
+        // Solana mode - check wallet connection
+        gameState.betAmount = 0.1;
+        const betAmountInput = document.getElementById('betAmount');
+        if (betAmountInput) {
+            betAmountInput.value = 0.1;
+            betAmountInput.min = '0.01';
+            betAmountInput.step = '0.01';
+        }
+        const betCurrency = document.getElementById('betCurrency');
+        if (betCurrency) betCurrency.textContent = '(SOL)';
+        
+        // Initialize Solana betting if wallet is connected
+        if (window.walletManager && window.walletManager.isConnected) {
+            if (!window.solanaBetting) {
+                window.solanaBetting = new SolanaBetting(window.walletManager);
+                window.solanaBetting.init('CLaREi6vTQPrPVBx2oJ7Lf3aLoZLeLnWTwPW9rv8NURy');
+            }
+            updateBalance();
+        } else {
+            gameState.balance = 0;
+            updateBalance();
+        }
+    }
+}
+
+// Handle wallet connection
+async function handleWalletConnect() {
+    try {
+        if (!window.walletManager) {
+            alert('Wallet manager not initialized');
+            return;
+        }
+
+        if (window.walletManager.isConnected) {
+            window.walletManager.disconnect();
+        } else {
+            await window.walletManager.connect();
+            
+            // Initialize Solana betting
+            if (!window.solanaBetting && window.walletManager.isConnected) {
+                window.solanaBetting = new SolanaBetting(window.walletManager);
+                // Initialize with house wallet address
+                window.solanaBetting.init('CLaREi6vTQPrPVBx2oJ7Lf3aLoZLeLnWTwPW9rv8NURy');
+            }
+        }
+    } catch (error) {
+        alert('Error connecting wallet: ' + error.message);
+        console.error('Wallet connection error:', error);
+    }
+}
+
+// Update wallet UI
+function updateWalletUI(state) {
+    const walletStatus = document.getElementById('walletStatus');
+    const walletConnectBtn = document.getElementById('walletConnectBtn');
+    const walletAddress = document.getElementById('walletAddress');
+
+    if (!walletStatus || !walletConnectBtn || !walletAddress) return;
+
+    if (state.isConnected) {
+        walletAddress.textContent = state.shortAddress || 'Connected';
+        walletConnectBtn.textContent = 'Disconnect';
+        if (gameState.gameMode === 'solana') {
+            updateBalance();
+        }
+    } else {
+        walletAddress.textContent = '';
+        walletConnectBtn.textContent = 'Connect Wallet';
+    }
+}
+
 // Setup event listeners
 function setupEventListeners() {
-    // Mode toggle
+    // Mode toggle (Normal/Time Attack)
     const modeButtons = document.querySelectorAll('.mode-btn');
     modeButtons.forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -140,7 +278,7 @@ function setupEventListeners() {
     const betAmountInput = document.getElementById('betAmount');
     if (betAmountInput) {
         betAmountInput.addEventListener('input', function(e) {
-            const value = parseInt(e.target.value) || 0;
+            const value = parseFloat(e.target.value) || 0;
             gameState.betAmount = value;
             updateBetAmounts();
         });
@@ -274,23 +412,57 @@ function updateBetAmounts() {
 }
 
 // Roll dice
-function rollDice() {
+async function rollDice() {
     if (gameState.isRolling) return;
     if (gameState.selectedColors.length === 0) {
         alert('Please place a bet first!');
         return;
     }
 
-    // Check balance and deduct bet
     const totalBet = gameState.betAmount * gameState.selectedColors.length;
-    if (totalBet > gameState.balance) {
-        alert('Insufficient balance!');
-        return;
-    }
 
-    // Deduct bet from balance
-    gameState.balance -= totalBet;
-    updateBalance();
+    // Solana mode: place bet transaction
+    if (gameState.gameMode === 'solana') {
+        if (!window.walletManager || !window.walletManager.isConnected) {
+            alert('Please connect your wallet first!');
+            return;
+        }
+
+        if (!window.solanaBetting) {
+            alert('Solana betting not initialized. Please reconnect your wallet.');
+            return;
+        }
+
+        try {
+            // Place bet transaction
+            const betResult = await window.solanaBetting.placeBet(
+                gameState.betAmount,
+                gameState.selectedColors
+            );
+
+            if (!betResult.success) {
+                alert('Failed to place bet');
+                return;
+            }
+
+            // Update balance from wallet
+            await window.walletManager.updateBalance();
+        } catch (error) {
+            alert('Error placing bet: ' + error.message);
+            console.error('Bet placement error:', error);
+            return;
+        }
+    } else {
+        // Demo mode: check balance and deduct
+        if (totalBet > gameState.balance) {
+            alert('Insufficient balance!');
+            return;
+        }
+
+        // Deduct bet from balance
+        gameState.balance -= totalBet;
+        updateBalance();
+    }
 
     gameState.isRolling = true;
     gameState.resultsCalculated = false; // Reset flag for new roll
@@ -440,9 +612,38 @@ function calculateResults() {
     const totalBet = betAmount * selectedColors.length;
     const netWinnings = totalWin - totalBet;
     
+    // Solana mode: process payout
+    if (gameState.gameMode === 'solana' && totalWin > 0) {
+        (async () => {
+            try {
+                await window.solanaBetting.payoutWinnings(
+                    totalWin,
+                    results,
+                    selectedColors,
+                    betAmount,
+                    gameState.mode // Pass game mode (normal or timeattack)
+                );
+                // Update balance from wallet
+                await window.walletManager.updateBalance();
+            } catch (error) {
+                console.error('Error processing payout:', error);
+                alert('Error processing payout: ' + error.message);
+            }
+        })();
+    }
+    
     // Update balance atomically
     if (totalWin > 0) {
-        gameState.balance += totalWin; // Add back full return (bet + winnings)
+        if (gameState.gameMode === 'demo') {
+            // Demo mode: update local balance
+            gameState.balance += totalWin; // Add back full return (bet + winnings)
+        } else {
+            // Solana mode: balance is managed by wallet
+            // Just refresh from wallet (async, but don't block)
+            if (window.walletManager) {
+                window.walletManager.updateBalance();
+            }
+        }
         playRandomSound('win');
         showConfetti();
         showResult(true, netWinnings, colorsMatched, maxDiceMatches, jackpotEligible);
@@ -610,8 +811,23 @@ function resetDice() {
 }
 
 // Update balance display
-function updateBalance() {
-    document.getElementById('balance').textContent = gameState.balance.toFixed(2);
+async function updateBalance() {
+    const balanceElement = document.getElementById('balance');
+    if (!balanceElement) return;
+
+    if (gameState.gameMode === 'solana') {
+        // Solana mode: get balance from wallet
+        if (window.walletManager && window.walletManager.isConnected) {
+            await window.walletManager.updateBalance();
+            const balance = window.walletManager.getBalance();
+            balanceElement.textContent = balance.toFixed(4) + ' SOL';
+        } else {
+            balanceElement.textContent = '0.0000 SOL';
+        }
+    } else {
+        // Demo mode: use local balance
+        balanceElement.textContent = gameState.balance.toFixed(2);
+    }
 }
 
 // Play random sound
