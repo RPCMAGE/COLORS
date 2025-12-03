@@ -360,7 +360,7 @@ function selectColor(color) {
 }
 
 // Place bet
-function placeBet() {
+async function placeBet() {
     if (gameState.isRolling) return;
     if (gameState.selectedColors.length === 0) {
         alert('Please select at least one color!');
@@ -371,11 +371,37 @@ function placeBet() {
         return;
     }
 
-    // Check if balance is sufficient
     const totalBet = gameState.betAmount * gameState.selectedColors.length;
-    if (totalBet > gameState.balance) {
-        alert('Insufficient balance for all selected colors!');
-        return;
+
+    // Solana mode: validate bet with wallet
+    if (gameState.gameMode === 'solana') {
+        if (!window.walletManager || !window.walletManager.isConnected) {
+            alert('Please connect your wallet first!');
+            return;
+        }
+
+        // Update balance from wallet first
+        await window.walletManager.updateBalance();
+
+        if (window.solanaBetting) {
+            const validation = window.solanaBetting.validateBetAmount(
+                gameState.betAmount,
+                gameState.selectedColors
+            );
+            if (!validation.valid) {
+                alert(validation.error);
+                return;
+            }
+        } else {
+            alert('Solana betting not initialized. Please reconnect your wallet.');
+            return;
+        }
+    } else {
+        // Demo mode: check balance
+        if (totalBet > gameState.balance) {
+            alert('Insufficient balance for all selected colors!');
+            return;
+        }
     }
 
     // Enable roll button (balance will be deducted when rolling)
