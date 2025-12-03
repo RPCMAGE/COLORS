@@ -223,14 +223,20 @@ class WalletManager {
     // Update SOL balance
     async updateBalance() {
         if (!this.connection || !this.publicKey) {
+            console.warn('Cannot update balance: connection or publicKey missing', {
+                hasConnection: !!this.connection,
+                hasPublicKey: !!this.publicKey
+            });
             this.balance = 0;
             this.notifyListeners();
             return;
         }
 
         try {
+            console.log('Fetching balance for:', this.publicKey.toString());
             const balance = await this.connection.getBalance(this.publicKey);
             this.balance = balance / 1e9; // Convert lamports to SOL
+            console.log('Balance updated:', this.balance, 'SOL');
             this.notifyListeners();
         } catch (error) {
             console.error('Error updating balance:', error);

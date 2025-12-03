@@ -845,8 +845,10 @@ async function updateBalance() {
     if (gameState.gameMode === 'solana') {
         // Solana mode: get balance from wallet
         if (window.walletManager && window.walletManager.isConnected) {
+            // Force balance update
             await window.walletManager.updateBalance();
             const balance = window.walletManager.getBalance();
+            console.log('Displaying balance:', balance, 'SOL');
             balanceElement.textContent = balance.toFixed(4) + ' SOL';
         } else {
             balanceElement.textContent = '0.0000 SOL';
