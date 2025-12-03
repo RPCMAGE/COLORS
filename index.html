@@ -26,18 +26,17 @@
         globalThis.process = window.process;
     </script>
     <!-- Buffer Polyfill - MUST load before Solana Web3.js -->
-    <!-- Use the browser build that exposes Buffer globally -->
-    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
+    <!-- Use browserify's standalone build that works in browsers -->
+    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js"></script>
     <script>
         // CRITICAL: Set up Buffer IMMEDIATELY and SYNCHRONOUSLY before Solana loads
-        // Solana Web3.js uses Buffer during module initialization, so it must be available NOW
-        // The buffer library from CDN exposes it as window.buffer.Buffer or just Buffer
+        // The buffer library needs to be exposed correctly for browser use
         (function() {
             function setupBuffer() {
                 let BufferObj = null;
                 
-                // The buffer library from CDN should expose Buffer in different ways
-                // Try the most common patterns
+                // The buffer library from CDN exposes Buffer in different ways depending on the build
+                // Try all possible locations
                 if (typeof Buffer !== 'undefined' && typeof Buffer.from === 'function') {
                     BufferObj = Buffer;
                 } else if (typeof window.Buffer !== 'undefined' && typeof window.Buffer.from === 'function') {
@@ -55,6 +54,63 @@
                     else if (typeof buffer === 'function' && typeof buffer.from === 'function') {
                         BufferObj = buffer;
                     }
+                    // Check if it's an object with Buffer property
+                    else if (buffer && typeof buffer === 'object' && buffer.Buffer && typeof buffer.Buffer.from === 'function') {
+                        BufferObj = buffer.Buffer;
+                    }
+                }
+                
+                // If still not found, try to create a minimal Buffer polyfill using Uint8Array
+                if (!BufferObj || typeof BufferObj.from !== 'function') {
+                    console.warn('Buffer library not found, creating minimal polyfill');
+                    // Create a minimal Buffer implementation
+                    BufferObj = function Buffer(arg) {
+                        if (typeof arg === 'number') {
+                            return new Uint8Array(arg);
+                        } else if (typeof arg === 'string') {
+                            const encoder = new TextEncoder();
+                            return encoder.encode(arg);
+                        } else if (arg instanceof ArrayBuffer) {
+                            return new Uint8Array(arg);
+                        } else if (Array.isArray(arg)) {
+                            return new Uint8Array(arg);
+                        }
+                        return new Uint8Array(0);
+                    };
+                    
+                    // Add static methods
+                    BufferObj.from = function(arg, encoding) {
+                        if (typeof arg === 'string') {
+                            if (encoding === 'hex') {
+                                const bytes = [];
+                                for (let i = 0; i < arg.length; i += 2) {
+                                    bytes.push(parseInt(arg.substr(i, 2), 16));
+                                }
+                                return new Uint8Array(bytes);
+                            }
+                            const encoder = new TextEncoder();
+                            return encoder.encode(arg);
+                        } else if (arg instanceof ArrayBuffer) {
+                            return new Uint8Array(arg);
+                        } else if (Array.isArray(arg)) {
+                            return new Uint8Array(arg);
+                        } else if (arg instanceof Uint8Array) {
+                            return new Uint8Array(arg);
+                        }
+                        return new Uint8Array(0);
+                    };
+                    
+                    BufferObj.alloc = function(size, fill) {
+                        const arr = new Uint8Array(size);
+                        if (fill !== undefined) {
+                            arr.fill(fill);
+                        }
+                        return arr;
+                    };
+                    
+                    BufferObj.isBuffer = function(obj) {
+                        return obj instanceof Uint8Array;
+                    };
                 }
                 
                 if (BufferObj && typeof BufferObj.from === 'function') {
@@ -72,10 +128,8 @@
                         process.Buffer = BufferObj;
                     }
                     
-                    // CRITICAL: Also set it on the root scope that Solana might check
-                    // Some Solana Web3.js builds check for Buffer in the module scope
+                    // Verify it works
                     try {
-                        // Verify it works
                         const test = BufferObj.from('test');
                         if (test instanceof Uint8Array) {
                             console.log('✓ Buffer polyfill set up successfully');
@@ -89,13 +143,7 @@
                         return false;
                     }
                 } else {
-                    console.error('CRITICAL: Could not find Buffer.from!', {
-                        hasBuffer: typeof Buffer !== 'undefined',
-                        hasWindowBuffer: typeof window.Buffer !== 'undefined',
-                        hasBufferVar: typeof buffer !== 'undefined',
-                        bufferType: typeof buffer,
-                        bufferKeys: typeof buffer === 'object' ? Object.keys(buffer) : 'N/A'
-                    });
+                    console.error('CRITICAL: Could not set up Buffer!');
                     return false;
                 }
             }
@@ -107,7 +155,7 @@
                     if (!setupBuffer()) {
                         console.error('CRITICAL: Buffer polyfill failed to load! Solana Web3.js will fail.');
                     }
-                }, 50);
+                }, 100);
             }
         })();
     </script>
