@@ -26,9 +26,8 @@
         globalThis.process = window.process;
     </script>
     <!-- Buffer Polyfill - MUST load before Solana Web3.js -->
-    <!-- Use a browser-compatible Buffer polyfill -->
-    <!-- Try multiple CDN sources for better reliability -->
-    <script src="https://unpkg.com/buffer@6.0.3/index.js"></script>
+    <!-- Use a browser-compatible Buffer polyfill that doesn't require Node.js modules -->
+    <!-- We'll create our own Buffer implementation since CDN versions have issues -->
     <script>
         // CRITICAL: Set up Buffer IMMEDIATELY and SYNCHRONOUSLY before Solana loads
         // The buffer library needs to be exposed correctly for browser use
