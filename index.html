@@ -25,61 +25,48 @@
         global.process = window.process;
         globalThis.process = window.process;
     </script>
-    <!-- Buffer Polyfill - Load synchronously -->
+    <!-- Buffer Polyfill - MUST load before Solana Web3.js -->
     <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js"></script>
     <script>
-        // Immediately set up Buffer after script loads (synchronous)
+        // CRITICAL: Set up Buffer IMMEDIATELY and SYNCHRONOUSLY before Solana loads
+        // Solana Web3.js uses Buffer during module initialization, so it must be available NOW
         (function() {
-            // Wait a tiny bit for buffer to be available
-            function setupBuffer() {
-                let BufferObj = null;
-                
-                // Try multiple ways to get Buffer
-                if (typeof Buffer !== 'undefined') {
-                    BufferObj = Buffer;
-                } else if (typeof window.Buffer !== 'undefined') {
-                    BufferObj = window.Buffer;
-                } else if (typeof buffer !== 'undefined') {
-                    if (buffer.Buffer) {
-                        BufferObj = buffer.Buffer;
-                    } else if (buffer.default && buffer.default.Buffer) {
-                        BufferObj = buffer.default.Buffer;
-                    } else if (typeof buffer === 'function') {
-                        BufferObj = buffer;
-                    }
-                }
-                
-                if (BufferObj && typeof BufferObj.from === 'function') {
-                    // Set Buffer everywhere
-                    window.Buffer = BufferObj;
-                    global.Buffer = BufferObj;
-                    globalThis.Buffer = BufferObj;
-                    if (typeof process !== 'undefined') {
-                        process.Buffer = BufferObj;
-                    }
-                    console.log('Buffer polyfill set up successfully');
-                    return true;
-                } else {
-                    console.error('Buffer.from is not a function', {
-                        BufferObj: typeof BufferObj,
-                        hasFrom: BufferObj && typeof BufferObj.from
-                    });
-                    return false;
+            let BufferObj = null;
+            
+            // Try to get Buffer immediately
+            if (typeof Buffer !== 'undefined' && typeof Buffer.from === 'function') {
+                BufferObj = Buffer;
+            } else if (typeof window.Buffer !== 'undefined' && typeof window.Buffer.from === 'function') {
+                BufferObj = window.Buffer;
+            } else if (typeof buffer !== 'undefined') {
+                if (buffer.Buffer && typeof buffer.Buffer.from === 'function') {
+                    BufferObj = buffer.Buffer;
+                } else if (buffer.default && buffer.default.Buffer && typeof buffer.default.Buffer.from === 'function') {
+                    BufferObj = buffer.default.Buffer;
                 }
             }
             
-            // Try immediately
-            if (!setupBuffer()) {
-                // Retry after a short delay
-                setTimeout(function() {
-                    if (!setupBuffer()) {
-                        console.error('Failed to set up Buffer polyfill');
-                    }
-                }, 50);
+            if (BufferObj) {
+                // Set Buffer EVERYWHERE before Solana loads
+                window.Buffer = BufferObj;
+                if (typeof global === 'undefined') {
+                    window.global = window;
+                }
+                global.Buffer = BufferObj;
+                if (typeof globalThis === 'undefined') {
+                    window.globalThis = window;
+                }
+                globalThis.Buffer = BufferObj;
+                if (typeof process !== 'undefined') {
+                    process.Buffer = BufferObj;
+                }
+                console.log('Buffer polyfill set up successfully before Solana Web3.js loads');
+            } else {
+                console.error('CRITICAL: Buffer polyfill failed to load! Solana Web3.js will fail.');
             }
         })();
     </script>
-    <!-- Solana Web3.js - Use IIFE bundle -->
+    <!-- Solana Web3.js - Use IIFE bundle (will use Buffer during initialization) -->
     <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js" onload="console.log('Solana Web3.js script loaded')" onerror="console.error('Failed to load Solana Web3.js')"></script>
     <script>
         // Expose Solana Web3.js globally immediately after it loads
