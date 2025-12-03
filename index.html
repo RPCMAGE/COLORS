@@ -112,6 +112,15 @@
         })();
     </script>
     <!-- Solana Web3.js - Use IIFE bundle (will use Buffer during initialization) -->
+    <!-- IMPORTANT: Buffer MUST be available before this script loads -->
+    <script>
+        // Verify Buffer is available before loading Solana
+        if (typeof Buffer === 'undefined' || typeof Buffer.from !== 'function') {
+            console.error('CRITICAL ERROR: Buffer is not available! Solana Web3.js will fail.');
+            throw new Error('Buffer polyfill not loaded. Please refresh the page.');
+        }
+        console.log('✓ Buffer verified before Solana Web3.js load');
+    </script>
     <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js" onload="console.log('Solana Web3.js script loaded')" onerror="console.error('Failed to load Solana Web3.js')"></script>
     <script>
         // Expose Solana Web3.js globally immediately after it loads
