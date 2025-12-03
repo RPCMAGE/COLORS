@@ -11,65 +11,66 @@
     <link rel="stylesheet" href="chat.css">
     <link rel="stylesheet" href="leaderboard.css">
     <!-- Buffer Polyfill (required for Solana Web3.js in browser) -->
-    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
     <script>
-        // Make Buffer available globally for Solana Web3.js
-        // The buffer library exposes Buffer globally, but we ensure it's available
+        // Create Buffer polyfill before Solana Web3.js loads
         (function() {
-            function setupBuffer() {
-                // Check multiple possible locations for Buffer
-                let BufferObj = null;
-                
-                if (typeof Buffer !== 'undefined') {
-                    BufferObj = Buffer;
-                } else if (typeof window.Buffer !== 'undefined') {
-                    BufferObj = window.Buffer;
-                } else if (typeof buffer !== 'undefined' && buffer.Buffer) {
-                    BufferObj = buffer.Buffer;
-                } else if (typeof globalThis !== 'undefined' && globalThis.Buffer) {
-                    BufferObj = globalThis.Buffer;
-                }
-                
-                if (BufferObj) {
-                    window.Buffer = BufferObj;
-                    if (typeof global === 'undefined') {
-                        window.global = window;
-                    }
-                    global.Buffer = BufferObj;
-                    if (typeof globalThis !== 'undefined') {
-                        globalThis.Buffer = BufferObj;
-                    }
-                } else {
-                    console.error('Buffer polyfill failed to load');
-                }
-            }
-            
-            // Try immediately (buffer should be loaded by now)
-            setupBuffer();
-            
-            // Also try after scripts load
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', setupBuffer);
-            }
-        })();
-    </script>
-    <!-- Solana Web3.js -->
-    <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
-    <script>
-        // Expose Solana Web3.js globally
-        window.addEventListener('load', function() {
-            if (typeof solanaWeb3 !== 'undefined') {
-                window.solanaWeb3 = solanaWeb3;
-            } else if (typeof window.solanaWeb3 === 'undefined') {
-                // Fallback: try to load from CDN
+            // Use a more complete Buffer implementation
+            if (typeof window.Buffer === 'undefined') {
+                // Load buffer polyfill synchronously
                 const script = document.createElement('script');
-                script.src = 'https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.js';
+                script.src = 'https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js';
+                script.async = false; // Load synchronously
+                
                 script.onload = function() {
+                    // Set up Buffer in all global scopes
+                    if (typeof Buffer !== 'undefined') {
+                        window.Buffer = Buffer;
+                        if (typeof global === 'undefined') {
+                            window.global = window;
+                        }
+                        global.Buffer = Buffer;
+                        if (typeof globalThis !== 'undefined') {
+                            globalThis.Buffer = Buffer;
+                        }
+                        // Now load Solana Web3.js
+                        loadSolanaWeb3();
+                    } else if (typeof buffer !== 'undefined' && buffer.Buffer) {
+                        window.Buffer = buffer.Buffer;
+                        if (typeof global === 'undefined') {
+                            window.global = window;
+                        }
+                        global.Buffer = buffer.Buffer;
+                        if (typeof globalThis !== 'undefined') {
+                            globalThis.Buffer = buffer.Buffer;
+                        }
+                        loadSolanaWeb3();
+                    }
+                };
+                
+                document.head.appendChild(script);
+            } else {
+                // Buffer already exists, just load Solana
+                loadSolanaWeb3();
+            }
+            
+            function loadSolanaWeb3() {
+                const solanaScript = document.createElement('script');
+                solanaScript.src = 'https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js';
+                solanaScript.async = false;
+                solanaScript.onload = function() {
                     if (typeof solanaWeb3 !== 'undefined') {
                         window.solanaWeb3 = solanaWeb3;
                     }
                 };
-                document.head.appendChild(script);
+                document.head.appendChild(solanaScript);
+            }
+        })();
+    </script>
+    <script>
+        // Expose Solana Web3.js globally (backup in case async loading didn't work)
+        window.addEventListener('load', function() {
+            if (typeof solanaWeb3 !== 'undefined' && typeof window.solanaWeb3 === 'undefined') {
+                window.solanaWeb3 = solanaWeb3;
             }
         });
     </script>
