@@ -26,8 +26,9 @@
         globalThis.process = window.process;
     </script>
     <!-- Buffer Polyfill - MUST load before Solana Web3.js -->
-    <!-- Use browserify's standalone build that works in browsers -->
-    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js"></script>
+    <!-- Use a browser-compatible Buffer polyfill -->
+    <!-- Try multiple CDN sources for better reliability -->
+    <script src="https://unpkg.com/buffer@6.0.3/index.js"></script>
     <script>
         // CRITICAL: Set up Buffer IMMEDIATELY and SYNCHRONOUSLY before Solana loads
         // The buffer library needs to be exposed correctly for browser use
