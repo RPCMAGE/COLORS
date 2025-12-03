@@ -28,6 +28,13 @@ class WalletManager {
             return true;
         }
         
+        // Check if Solana is available as window.solana (browser bundle)
+        if (typeof window.solana !== 'undefined' && window.solana.web3) {
+            window.solanaWeb3 = window.solana.web3;
+            this.solanaWeb3 = window.solana.web3;
+            return true;
+        }
+        
         // Wait up to 5 seconds for it to load
         for (let i = 0; i < 50; i++) {
             await new Promise(resolve => setTimeout(resolve, 100));
@@ -38,6 +45,11 @@ class WalletManager {
             if (typeof solanaWeb3 !== 'undefined') {
                 window.solanaWeb3 = solanaWeb3;
                 this.solanaWeb3 = solanaWeb3;
+                return true;
+            }
+            if (typeof window.solana !== 'undefined' && window.solana.web3) {
+                window.solanaWeb3 = window.solana.web3;
+                this.solanaWeb3 = window.solana.web3;
                 return true;
             }
         }
