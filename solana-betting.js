@@ -75,11 +75,23 @@ class SolanaBetting {
             transaction.recentBlockhash = blockhash;
             transaction.feePayer = this.walletManager.publicKey;
 
-            // Use Phantom's sendTransaction method instead of manual serialization
-            // This avoids Buffer issues as Phantom handles serialization internally
-            // sendTransaction returns an object with a signature property, so we destructure it
-            const result = await this.walletManager.wallet.sendTransaction(transaction, this.walletManager.connection);
-            const signature = typeof result === 'string' ? result : result.signature || result;
+            // Phantom wallet API: signTransaction signs the transaction, then we send it
+            // Check if sendTransaction exists (newer Phantom versions) or use signTransaction + sendRawTransaction
+            let signature;
+            
+            if (typeof this.walletManager.wallet.sendTransaction === 'function') {
+                // Newer Phantom API - sendTransaction handles signing and sending
+                const result = await this.walletManager.wallet.sendTransaction(transaction, this.walletManager.connection);
+                signature = typeof result === 'string' ? result : (result.signature || result);
+            } else if (typeof this.walletManager.wallet.signTransaction === 'function') {
+                // Standard Phantom API - sign first, then send
+                const signed = await this.walletManager.wallet.signTransaction(transaction);
+                // Serialize the signed transaction (this should work now that Buffer is available)
+                const serialized = signed.serialize();
+                signature = await this.walletManager.connection.sendRawTransaction(serialized);
+            } else {
+                throw new Error('Wallet does not support transaction signing. Please update Phantom wallet.');
+            }
 
             // Wait for confirmation
             await this.walletManager.connection.confirmTransaction(signature, 'confirmed');
