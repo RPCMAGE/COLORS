@@ -42,6 +42,7 @@ const audioFiles = {
 function init() {
     try {
         setupEventListeners();
+        setupGameModeSelector();
         updateBalance();
         updateBetAmounts();
         
