@@ -49,15 +49,47 @@
             console.error('Buffer.from is not available');
         }
     </script>
-    <!-- Solana Web3.js - Use browser bundle -->
-    <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.browser.js"></script>
+    <!-- Solana Web3.js - Use IIFE bundle -->
+    <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
     <script>
-        // Expose Solana Web3.js globally (backup in case async loading didn't work)
-        window.addEventListener('load', function() {
-            if (typeof solanaWeb3 !== 'undefined' && typeof window.solanaWeb3 === 'undefined') {
-                window.solanaWeb3 = solanaWeb3;
+        // Expose Solana Web3.js globally immediately after it loads
+        (function() {
+            function exposeSolana() {
+                // The IIFE bundle should expose solanaWeb3 globally
+                if (typeof solanaWeb3 !== 'undefined') {
+                    window.solanaWeb3 = solanaWeb3;
+                    console.log('Solana Web3.js loaded successfully');
+                    return true;
+                }
+                
+                // Check if it's available under a different name
+                if (typeof window.web3 !== 'undefined' && window.web3.solana) {
+                    window.solanaWeb3 = window.web3.solana;
+                    console.log('Solana Web3.js loaded from window.web3');
+                    return true;
+                }
+                
+                return false;
             }
-        });
+            
+            // Try immediately
+            if (!exposeSolana()) {
+                // If not available yet, wait for it
+                const checkInterval = setInterval(function() {
+                    if (exposeSolana()) {
+                        clearInterval(checkInterval);
+                    }
+                }, 100);
+                
+                // Stop checking after 5 seconds
+                setTimeout(function() {
+                    clearInterval(checkInterval);
+                    if (!window.solanaWeb3) {
+                        console.error('Solana Web3.js failed to load');
+                    }
+                }, 5000);
+            }
+        })();
     </script>
 </head>
 <body>
