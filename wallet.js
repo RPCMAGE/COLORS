@@ -195,7 +195,26 @@ class WalletManager {
             }
 
             const response = await this.wallet.connect();
+            console.log('Wallet connected, response:', response);
+            console.log('Public key from response:', response.publicKey.toString());
+            
             this.publicKey = new this.PublicKey(response.publicKey.toString());
+            console.log('PublicKey object created:', this.publicKey.toString());
+            
+            // Ensure connection is set up
+            if (!this.connection) {
+                console.log('Connection not set, creating it...');
+                const { Connection } = this.solanaWeb3;
+                const network = 'devnet';
+                this.connection = new Connection(
+                    network === 'mainnet-beta' 
+                        ? 'https://api.mainnet-beta.solana.com'
+                        : 'https://api.devnet.solana.com',
+                    'confirmed'
+                );
+                console.log('Connection created:', this.connection.rpcEndpoint);
+            }
+            
             await this.updateBalance();
             this.isConnected = true;
             this.notifyListeners();
@@ -222,24 +241,45 @@ class WalletManager {
 
     // Update SOL balance
     async updateBalance() {
-        if (!this.connection || !this.publicKey) {
-            console.warn('Cannot update balance: connection or publicKey missing', {
-                hasConnection: !!this.connection,
-                hasPublicKey: !!this.publicKey
-            });
+        console.log('updateBalance called', {
+            hasConnection: !!this.connection,
+            hasPublicKey: !!this.publicKey,
+            publicKey: this.publicKey ? this.publicKey.toString() : null,
+            isConnected: this.isConnected
+        });
+
+        if (!this.connection) {
+            console.error('No connection available. Connection not initialized.');
+            this.balance = 0;
+            this.notifyListeners();
+            return;
+        }
+
+        if (!this.publicKey) {
+            console.error('No public key available. Wallet not connected.');
             this.balance = 0;
             this.notifyListeners();
             return;
         }
 
         try {
-            console.log('Fetching balance for:', this.publicKey.toString());
+            const publicKeyStr = this.publicKey.toString();
+            console.log('Fetching balance for:', publicKeyStr);
+            console.log('Using connection:', this.connection.rpcEndpoint || 'unknown endpoint');
+            
             const balance = await this.connection.getBalance(this.publicKey);
+            console.log('Raw balance (lamports):', balance);
             this.balance = balance / 1e9; // Convert lamports to SOL
             console.log('Balance updated:', this.balance, 'SOL');
             this.notifyListeners();
         } catch (error) {
             console.error('Error updating balance:', error);
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                connection: this.connection ? 'exists' : 'missing',
+                publicKey: this.publicKey ? this.publicKey.toString() : 'missing'
+            });
             this.balance = 0;
             this.notifyListeners();
         }
