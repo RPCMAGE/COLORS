@@ -68,9 +68,34 @@ class WalletManager {
 
             const { Connection, PublicKey } = this.solanaWeb3;
             
-            // Check if Phantom or other Solana wallet is installed
-            if (typeof window.solana !== 'undefined' && window.solana.isPhantom) {
-                this.wallet = window.solana;
+            // Wait for wallet to be available (Phantom might inject itself asynchronously)
+            let walletFound = false;
+            for (let i = 0; i < 20; i++) {
+                if (typeof window.solana !== 'undefined') {
+                    // Check for Phantom
+                    if (window.solana.isPhantom) {
+                        this.wallet = window.solana;
+                        walletFound = true;
+                        break;
+                    }
+                    // Check for other Solana wallets
+                    if (window.solana && typeof window.solana.connect === 'function') {
+                        this.wallet = window.solana;
+                        walletFound = true;
+                        break;
+                    }
+                }
+                if (!walletFound) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+            
+            if (!walletFound) {
+                console.warn('Solana wallet not found. Please install Phantom wallet.');
+                return false;
+            }
+            
+            if (this.wallet) {
                 
                 // Use devnet for testing, mainnet for production
                 // Set via environment variable or default to devnet for testing
@@ -120,10 +145,26 @@ class WalletManager {
     // Connect wallet
     async connect() {
         try {
+            // First check if wallet is already available
+            if (typeof window.solana !== 'undefined' && !this.wallet) {
+                if (window.solana.isPhantom || typeof window.solana.connect === 'function') {
+                    this.wallet = window.solana;
+                }
+            }
+            
             if (!this.wallet) {
                 const initialized = await this.init();
                 if (!initialized) {
-                    throw new Error('Wallet not available. Please install Phantom wallet.');
+                    // Try one more time to find wallet
+                    if (typeof window.solana !== 'undefined') {
+                        if (window.solana.isPhantom || typeof window.solana.connect === 'function') {
+                            this.wallet = window.solana;
+                        } else {
+                            throw new Error('Wallet not available. Please install Phantom wallet.');
+                        }
+                    } else {
+                        throw new Error('Wallet not available. Please install Phantom wallet.');
+                    }
                 }
             }
 
