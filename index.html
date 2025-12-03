@@ -25,32 +25,62 @@
         global.process = window.process;
         globalThis.process = window.process;
     </script>
-    <!-- Use a different Buffer polyfill that works better with Solana -->
+    <!-- Buffer Polyfill - Load synchronously -->
     <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js"></script>
     <script>
-        // Force Buffer to be available immediately
-        if (typeof Buffer !== 'undefined') {
-            window.Buffer = Buffer;
-            global.Buffer = Buffer;
-            globalThis.Buffer = Buffer;
-        } else if (typeof buffer !== 'undefined') {
-            const BufferClass = buffer.Buffer || (buffer.default && buffer.default.Buffer);
-            if (BufferClass) {
-                window.Buffer = BufferClass;
-                global.Buffer = BufferClass;
-                globalThis.Buffer = BufferClass;
+        // Immediately set up Buffer after script loads (synchronous)
+        (function() {
+            // Wait a tiny bit for buffer to be available
+            function setupBuffer() {
+                let BufferObj = null;
+                
+                // Try multiple ways to get Buffer
+                if (typeof Buffer !== 'undefined') {
+                    BufferObj = Buffer;
+                } else if (typeof window.Buffer !== 'undefined') {
+                    BufferObj = window.Buffer;
+                } else if (typeof buffer !== 'undefined') {
+                    if (buffer.Buffer) {
+                        BufferObj = buffer.Buffer;
+                    } else if (buffer.default && buffer.default.Buffer) {
+                        BufferObj = buffer.default.Buffer;
+                    } else if (typeof buffer === 'function') {
+                        BufferObj = buffer;
+                    }
+                }
+                
+                if (BufferObj && typeof BufferObj.from === 'function') {
+                    // Set Buffer everywhere
+                    window.Buffer = BufferObj;
+                    global.Buffer = BufferObj;
+                    globalThis.Buffer = BufferObj;
+                    if (typeof process !== 'undefined') {
+                        process.Buffer = BufferObj;
+                    }
+                    console.log('Buffer polyfill set up successfully');
+                    return true;
+                } else {
+                    console.error('Buffer.from is not a function', {
+                        BufferObj: typeof BufferObj,
+                        hasFrom: BufferObj && typeof BufferObj.from
+                    });
+                    return false;
+                }
             }
-        }
-        
-        // Verify Buffer.from exists
-        if (typeof window.Buffer !== 'undefined' && typeof window.Buffer.from === 'function') {
-            console.log('Buffer polyfill loaded successfully');
-        } else {
-            console.error('Buffer.from is not available');
-        }
+            
+            // Try immediately
+            if (!setupBuffer()) {
+                // Retry after a short delay
+                setTimeout(function() {
+                    if (!setupBuffer()) {
+                        console.error('Failed to set up Buffer polyfill');
+                    }
+                }, 50);
+            }
+        })();
     </script>
     <!-- Solana Web3.js - Use IIFE bundle -->
-    <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js" onload="console.log('Solana Web3.js script loaded')" onerror="console.error('Failed to load Solana Web3.js')"></script>
     <script>
         // Expose Solana Web3.js globally immediately after it loads
         (function() {
@@ -58,7 +88,7 @@
                 // The IIFE bundle should expose solanaWeb3 globally
                 if (typeof solanaWeb3 !== 'undefined') {
                     window.solanaWeb3 = solanaWeb3;
-                    console.log('Solana Web3.js loaded successfully');
+                    console.log('Solana Web3.js exposed successfully');
                     return true;
                 }
                 
