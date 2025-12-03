@@ -149,7 +149,8 @@ export default async function handler(req, res) {
             }
             houseKeypair = Keypair.fromSecretKey(new Uint8Array(privateKeyArray));
         } catch (keyError) {
-            console.error('Error parsing house wallet key:', keyError);
+            // Log error without exposing private key
+            console.error('Error parsing house wallet key:', keyError.message || 'Invalid format');
             return res.status(500).json({ error: 'Invalid house wallet configuration' });
         }
 

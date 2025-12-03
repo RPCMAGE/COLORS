@@ -11,11 +11,22 @@
     <link rel="stylesheet" href="chat.css">
     <link rel="stylesheet" href="leaderboard.css">
     <!-- Buffer Polyfill (required for Solana Web3.js in browser) -->
-    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js"></script>
     <script>
-        // Make Buffer available globally
+        // Make Buffer available globally for Solana Web3.js
         if (typeof window.Buffer === 'undefined') {
-            window.Buffer = buffer.Buffer;
+            if (typeof buffer !== 'undefined') {
+                window.Buffer = buffer.Buffer;
+            } else if (typeof Buffer !== 'undefined') {
+                window.Buffer = Buffer;
+            }
+        }
+        // Also set global Buffer for modules that check for it
+        if (typeof global === 'undefined') {
+            window.global = window;
+        }
+        if (typeof global.Buffer === 'undefined' && typeof window.Buffer !== 'undefined') {
+            global.Buffer = window.Buffer;
         }
     </script>
     <!-- Solana Web3.js -->
