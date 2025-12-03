@@ -75,9 +75,9 @@ class SolanaBetting {
             transaction.recentBlockhash = blockhash;
             transaction.feePayer = this.walletManager.publicKey;
 
-            // Sign and send transaction
-            const signed = await this.walletManager.wallet.signTransaction(transaction);
-            const signature = await this.walletManager.connection.sendRawTransaction(signed.serialize());
+            // Use Phantom's sendTransaction method instead of manual serialization
+            // This avoids Buffer issues as Phantom handles serialization internally
+            const signature = await this.walletManager.wallet.sendTransaction(transaction, this.walletManager.connection);
 
             // Wait for confirmation
             await this.walletManager.connection.confirmTransaction(signature, 'confirmed');
