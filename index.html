@@ -26,36 +26,39 @@
         globalThis.process = window.process;
     </script>
     <!-- Buffer Polyfill - MUST load before Solana Web3.js -->
-    <!-- Use unpkg instead of jsdelivr for better compatibility -->
-    <script src="https://unpkg.com/buffer@6.0.3/index.js"></script>
+    <!-- Use the browser build that exposes Buffer globally -->
+    <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
     <script>
         // CRITICAL: Set up Buffer IMMEDIATELY and SYNCHRONOUSLY before Solana loads
         // Solana Web3.js uses Buffer during module initialization, so it must be available NOW
+        // The buffer library from CDN exposes it as window.buffer.Buffer or just Buffer
         (function() {
-            // Wait for buffer script to fully load
             function setupBuffer() {
                 let BufferObj = null;
                 
-                // Try multiple ways to get Buffer - the buffer library exposes it differently
+                // The buffer library from CDN should expose Buffer in different ways
+                // Try the most common patterns
                 if (typeof Buffer !== 'undefined' && typeof Buffer.from === 'function') {
                     BufferObj = Buffer;
                 } else if (typeof window.Buffer !== 'undefined' && typeof window.Buffer.from === 'function') {
                     BufferObj = window.Buffer;
                 } else if (typeof buffer !== 'undefined') {
-                    // The buffer library might expose it as buffer.Buffer or just buffer
+                    // Check buffer.Buffer (most common)
                     if (buffer.Buffer && typeof buffer.Buffer.from === 'function') {
                         BufferObj = buffer.Buffer;
-                    } else if (buffer.default && buffer.default.Buffer && typeof buffer.default.Buffer.from === 'function') {
+                    }
+                    // Check buffer.default.Buffer (ES6 module default export)
+                    else if (buffer.default && buffer.default.Buffer && typeof buffer.default.Buffer.from === 'function') {
                         BufferObj = buffer.default.Buffer;
-                    } else if (typeof buffer === 'function' && typeof buffer.from === 'function') {
-                        BufferObj = buffer;
-                    } else if (buffer && typeof buffer.from === 'function') {
+                    }
+                    // Check if buffer itself is the Buffer constructor
+                    else if (typeof buffer === 'function' && typeof buffer.from === 'function') {
                         BufferObj = buffer;
                     }
                 }
                 
                 if (BufferObj && typeof BufferObj.from === 'function') {
-                    // Set Buffer EVERYWHERE before Solana loads
+                    // Set Buffer EVERYWHERE - Solana Web3.js checks multiple places
                     window.Buffer = BufferObj;
                     if (typeof global === 'undefined') {
                         window.global = window;
@@ -69,33 +72,42 @@
                         process.Buffer = BufferObj;
                     }
                     
-                    // Verify it works
+                    // CRITICAL: Also set it on the root scope that Solana might check
+                    // Some Solana Web3.js builds check for Buffer in the module scope
                     try {
+                        // Verify it works
                         const test = BufferObj.from('test');
-                        console.log('Buffer polyfill set up successfully - test passed:', test instanceof Uint8Array);
+                        if (test instanceof Uint8Array) {
+                            console.log('✓ Buffer polyfill set up successfully');
+                            return true;
+                        } else {
+                            console.error('Buffer test failed: result is not Uint8Array');
+                            return false;
+                        }
                     } catch (e) {
                         console.error('Buffer test failed:', e);
+                        return false;
                     }
-                    return true;
                 } else {
-                    console.error('CRITICAL: Buffer.from is not a function!', {
+                    console.error('CRITICAL: Could not find Buffer.from!', {
                         hasBuffer: typeof Buffer !== 'undefined',
                         hasWindowBuffer: typeof window.Buffer !== 'undefined',
                         hasBufferVar: typeof buffer !== 'undefined',
-                        bufferType: typeof buffer
+                        bufferType: typeof buffer,
+                        bufferKeys: typeof buffer === 'object' ? Object.keys(buffer) : 'N/A'
                     });
                     return false;
                 }
             }
             
-            // Try immediately
+            // Try immediately (script should be loaded by now)
             if (!setupBuffer()) {
-                // Retry after script loads (sometimes it takes a moment)
+                // Retry after a short delay in case script is still loading
                 setTimeout(function() {
                     if (!setupBuffer()) {
                         console.error('CRITICAL: Buffer polyfill failed to load! Solana Web3.js will fail.');
                     }
-                }, 100);
+                }, 50);
             }
         })();
     </script>
