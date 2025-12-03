@@ -39,7 +39,7 @@ body::after {
     left: 0;
     width: 100%;
     height: calc(100% - 100px - 2rem);
-    background-image: url('Assets/Images/Colors Screen.png');
+    background-image: url('Assets/Images/Colors_Screen_19x6.png');
     background-size: 100% 100%;
     background-position: center top;
     background-repeat: no-repeat;
