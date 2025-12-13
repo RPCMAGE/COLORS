@@ -373,10 +373,8 @@ function switchMode(mode) {
         if (gameState.selectedColors.length > 0) {
             clearBet();
         }
-        // Start timer after a short delay to ensure UI is ready
-        setTimeout(() => {
-            startTimeAttackTimer();
-        }, 100);
+        // Start timer immediately
+        startTimeAttackTimer();
     } else {
         stopTimer();
     }
@@ -720,6 +718,22 @@ function calculateResults() {
         })();
     }
     
+    // Store calculation data for fairness display BEFORE showing result
+    if (gameState.lastRollData) {
+        gameState.lastRollData.calculation = {
+            selectedColors: selectedColors,
+            betAmount: betAmount,
+            totalBet: totalBet,
+            diceResults: results,
+            colorsMatched: colorsMatched,
+            maxDiceMatches: maxDiceMatches,
+            totalWin: totalWin,
+            netWinnings: netWinnings,
+            jackpot: jackpotEligible,
+            mode: gameState.mode
+        };
+    }
+    
     // Update balance atomically
     if (totalWin > 0) {
         if (gameState.gameMode === 'demo') {
@@ -752,22 +766,6 @@ function calculateResults() {
     
     // Mark rolling as complete
     gameState.isRolling = false;
-    
-    // Store calculation data for fairness display
-    if (gameState.lastRollData) {
-        gameState.lastRollData.calculation = {
-            selectedColors: selectedColors,
-            betAmount: betAmount,
-            totalBet: totalBet,
-            diceResults: results,
-            colorsMatched: colorsMatched,
-            maxDiceMatches: maxDiceMatches,
-            totalWin: totalWin,
-            netWinnings: netWinnings,
-            jackpot: jackpotEligible,
-            mode: gameState.mode
-        };
-    }
     
     // Debug: Log calculation details
     if (totalWin > 0) {
@@ -805,7 +803,8 @@ function showResult(won, winAmount, colorsMatched, maxDiceMatches, jackpot) {
     // Show/hide fairness button based on whether we have roll data
     const resultFairnessBtn = document.getElementById('resultFairnessBtn');
     if (resultFairnessBtn) {
-        if (gameState.lastRollData && gameState.lastRollData.calculation) {
+        // Show button if we have roll data (works for both wins and losses)
+        if (gameState.lastRollData) {
             resultFairnessBtn.style.display = 'block';
         } else {
             resultFairnessBtn.style.display = 'none';
@@ -973,7 +972,10 @@ function playRandomSound(type) {
 
 // Time Attack Timer
 function startTimeAttackTimer() {
-    if (gameState.mode !== 'timeattack') return;
+    if (gameState.mode !== 'timeattack') {
+        stopTimer();
+        return;
+    }
     
     stopTimer();
     gameState.timeLeft = 10;
@@ -981,11 +983,19 @@ function startTimeAttackTimer() {
     const timerFill = document.getElementById('timerFill');
     const timerText = document.getElementById('timerText');
     
-    if (!timerDisplay || !timerFill || !timerText) return;
+    if (!timerDisplay || !timerFill || !timerText) {
+        console.warn('Timer elements not found');
+        return;
+    }
     
+    // Make sure timer is visible
     timerDisplay.classList.add('active');
+    timerDisplay.style.display = 'block';
     timerText.textContent = gameState.timeLeft;
     timerFill.style.width = '100%';
+    timerFill.style.background = 'linear-gradient(90deg, var(--red), var(--orange))';
+    
+    console.log('Timer started, time left:', gameState.timeLeft);
     
     gameState.timerInterval = setInterval(() => {
         gameState.timeLeft--;
@@ -995,9 +1005,11 @@ function startTimeAttackTimer() {
         
         // Add warning color when time is low
         if (gameState.timeLeft <= 3) {
-            timerFill.style.background = 'linear-gradient(90deg, var(--red), var(--orange))';
+            timerFill.style.background = 'linear-gradient(90deg, var(--red), #ff0000)';
+            timerFill.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.8)';
         } else {
             timerFill.style.background = 'linear-gradient(90deg, var(--red), var(--orange))';
+            timerFill.style.boxShadow = '0 0 10px rgba(230, 57, 70, 0.5)';
         }
         
         if (gameState.timeLeft <= 0) {

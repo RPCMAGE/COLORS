@@ -640,11 +640,13 @@ h1, h2, h3, h4, h5, h6 {
     width: 200px;
     opacity: 0;
     transition: opacity 0.3s;
-    z-index: 100;
+    z-index: 1000;
+    pointer-events: none;
 }
 
 .timer-display.active {
     opacity: 1;
+    display: block;
 }
 
 .timer-bar {
