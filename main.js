@@ -12,7 +12,8 @@ const gameState = {
     timeLeft: 10,
     skippedRounds: 0,
     volume: 0.4, // Default volume (40%)
-    resultsCalculated: false // Flag to prevent double calculation
+    resultsCalculated: false, // Flag to prevent double calculation
+    lastRollData: null // Store last roll data for fairness display
 };
 
 // Color configuration
@@ -311,6 +312,50 @@ function setupEventListeners() {
             rollDice();
         });
     }
+
+    // Info modal
+    const infoBtn = document.getElementById('infoBtn');
+    const infoModal = document.getElementById('infoModal');
+    const infoModalClose = document.getElementById('infoModalClose');
+    if (infoBtn) {
+        infoBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showInfoModal();
+        });
+    }
+    if (infoModalClose) {
+        infoModalClose.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            hideInfoModal();
+        });
+    }
+    if (infoModal) {
+        infoModal.addEventListener('click', function(e) {
+            if (e.target === infoModal) {
+                hideInfoModal();
+            }
+        });
+    }
+
+    // Fairness modal
+    const fairnessModal = document.getElementById('fairnessModal');
+    const fairnessModalClose = document.getElementById('fairnessModalClose');
+    if (fairnessModalClose) {
+        fairnessModalClose.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            hideFairnessModal();
+        });
+    }
+    if (fairnessModal) {
+        fairnessModal.addEventListener('click', function(e) {
+            if (e.target === fairnessModal) {
+                hideFairnessModal();
+            }
+        });
+    }
 }
 
 // Switch game mode
@@ -328,7 +373,10 @@ function switchMode(mode) {
         if (gameState.selectedColors.length > 0) {
             clearBet();
         }
-        startTimeAttackTimer();
+        // Start timer after a short delay to ensure UI is ready
+        setTimeout(() => {
+            startTimeAttackTimer();
+        }, 100);
     } else {
         stopTimer();
     }
@@ -408,7 +456,7 @@ async function placeBet() {
     document.getElementById('rollBtn').disabled = false;
     updateBetAmounts();
     
-    // Stop timer if in time attack mode
+    // Stop timer if in time attack mode (will restart after result)
     if (gameState.mode === 'timeattack') {
         stopTimer();
     }
@@ -505,12 +553,25 @@ async function rollDice() {
     });
 
     // Generate random results after animation
+    // Use crypto.getRandomValues for better randomness (fairness)
     setTimeout(() => {
+        const randomValues = new Uint32Array(3);
+        crypto.getRandomValues(randomValues);
+        
         gameState.diceResults = [
-            colors[Math.floor(Math.random() * colors.length)],
-            colors[Math.floor(Math.random() * colors.length)],
-            colors[Math.floor(Math.random() * colors.length)]
+            colors[randomValues[0] % colors.length],
+            colors[randomValues[1] % colors.length],
+            colors[randomValues[2] % colors.length]
         ];
+        
+        // Store roll data for fairness display
+        gameState.lastRollData = {
+            diceResults: [...gameState.diceResults],
+            selectedColors: [...gameState.selectedColors],
+            betAmount: gameState.betAmount,
+            mode: gameState.mode,
+            randomValues: Array.from(randomValues)
+        };
 
         // Stop animation and show results
         diceElements.forEach((die, index) => {
@@ -692,6 +753,22 @@ function calculateResults() {
     // Mark rolling as complete
     gameState.isRolling = false;
     
+    // Store calculation data for fairness display
+    if (gameState.lastRollData) {
+        gameState.lastRollData.calculation = {
+            selectedColors: selectedColors,
+            betAmount: betAmount,
+            totalBet: totalBet,
+            diceResults: results,
+            colorsMatched: colorsMatched,
+            maxDiceMatches: maxDiceMatches,
+            totalWin: totalWin,
+            netWinnings: netWinnings,
+            jackpot: jackpotEligible,
+            mode: gameState.mode
+        };
+    }
+    
     // Debug: Log calculation details
     if (totalWin > 0) {
         console.log('Win Calculation:', {
@@ -724,6 +801,16 @@ function showResult(won, winAmount, colorsMatched, maxDiceMatches, jackpot) {
     // Remove any existing click listeners
     const newOkBtn = resultOkBtn.cloneNode(true);
     resultOkBtn.parentNode.replaceChild(newOkBtn, resultOkBtn);
+    
+    // Show/hide fairness button based on whether we have roll data
+    const resultFairnessBtn = document.getElementById('resultFairnessBtn');
+    if (resultFairnessBtn) {
+        if (gameState.lastRollData && gameState.lastRollData.calculation) {
+            resultFairnessBtn.style.display = 'block';
+        } else {
+            resultFairnessBtn.style.display = 'none';
+        }
+    }
 
     if (won) {
         resultDisplay.classList.add('win');
@@ -770,6 +857,18 @@ function showResult(won, winAmount, colorsMatched, maxDiceMatches, jackpot) {
 
     // Add click listener to OK button
     document.getElementById('resultOkBtn').addEventListener('click', hideResult);
+
+    // Add click listener to Fairness button
+    const fairnessBtn = document.getElementById('resultFairnessBtn');
+    if (fairnessBtn) {
+        const newFairnessBtn = fairnessBtn.cloneNode(true);
+        fairnessBtn.parentNode.replaceChild(newFairnessBtn, fairnessBtn);
+        newFairnessBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showFairnessModal();
+        });
+    }
 
     // Show the result display
     resultDisplay.classList.add('show');
@@ -882,13 +981,24 @@ function startTimeAttackTimer() {
     const timerFill = document.getElementById('timerFill');
     const timerText = document.getElementById('timerText');
     
+    if (!timerDisplay || !timerFill || !timerText) return;
+    
     timerDisplay.classList.add('active');
     timerText.textContent = gameState.timeLeft;
+    timerFill.style.width = '100%';
     
     gameState.timerInterval = setInterval(() => {
         gameState.timeLeft--;
         timerText.textContent = gameState.timeLeft;
-        timerFill.style.width = (gameState.timeLeft / 10 * 100) + '%';
+        const percentage = (gameState.timeLeft / 10 * 100);
+        timerFill.style.width = percentage + '%';
+        
+        // Add warning color when time is low
+        if (gameState.timeLeft <= 3) {
+            timerFill.style.background = 'linear-gradient(90deg, var(--red), var(--orange))';
+        } else {
+            timerFill.style.background = 'linear-gradient(90deg, var(--red), var(--orange))';
+        }
         
         if (gameState.timeLeft <= 0) {
             stopTimer();
@@ -912,7 +1022,149 @@ function stopTimer() {
         clearInterval(gameState.timerInterval);
         gameState.timerInterval = null;
     }
-    document.getElementById('timerDisplay').classList.remove('active');
+    const timerDisplay = document.getElementById('timerDisplay');
+    if (timerDisplay) {
+        timerDisplay.classList.remove('active');
+    }
+}
+
+// Show info modal
+function showInfoModal() {
+    const modal = document.getElementById('infoModal');
+    if (modal) {
+        modal.classList.add('show');
+    }
+}
+
+// Hide info modal
+function hideInfoModal() {
+    const modal = document.getElementById('infoModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
+
+// Show fairness modal
+function showFairnessModal() {
+    const modal = document.getElementById('fairnessModal');
+    const content = document.getElementById('fairnessContent');
+    if (!modal || !content) return;
+
+    if (!gameState.lastRollData) {
+        content.innerHTML = '<p>No roll data available. Please roll the dice first.</p>';
+        modal.classList.add('show');
+        return;
+    }
+
+    const data = gameState.lastRollData;
+    const calc = data.calculation || {};
+    
+    // Color mapping for display
+    const colorNames = {
+        yellow: 'Yellow',
+        orange: 'Orange',
+        pink: 'Pink',
+        blue: 'Blue',
+        green: 'Green',
+        red: 'Red'
+    };
+    
+    const colorClasses = {
+        yellow: 'var(--yellow)',
+        orange: 'var(--orange)',
+        pink: 'var(--pink)',
+        blue: 'var(--blue)',
+        green: 'var(--green)',
+        red: 'var(--red)'
+    };
+
+    let html = '';
+
+    // Dice Results Section
+    html += '<div class="fairness-section">';
+    html += '<h3>🎲 Dice Results</h3>';
+    html += '<div class="fairness-dice-results">';
+    data.diceResults.forEach((color, index) => {
+        html += `<div class="fairness-die" style="background: ${colorClasses[color]}; color: ${color === 'yellow' ? '#000' : '#fff'};">${colorNames[color][0]}</div>`;
+    });
+    html += '</div>';
+    html += `<p><strong>Result:</strong> ${data.diceResults.map(c => colorNames[c]).join(', ')}</p>`;
+    html += '</div>';
+
+    // Randomness Verification
+    html += '<div class="fairness-section">';
+    html += '<h3>🔐 Randomness Verification</h3>';
+    html += '<p>Dice results generated using <strong>crypto.getRandomValues()</strong> - a cryptographically secure random number generator.</p>';
+    html += `<p><strong>Random Values:</strong> ${data.randomValues.join(', ')}</p>`;
+    html += `<p><strong>Modulo Operation:</strong> Each value modulo 6 (6 colors) determines the dice result.</p>`;
+    html += '</div>';
+
+    // Bet Details
+    html += '<div class="fairness-section">';
+    html += '<h3>💰 Bet Details</h3>';
+    html += `<p><strong>Selected Colors:</strong> ${calc.selectedColors ? calc.selectedColors.map(c => colorNames[c]).join(', ') : 'None'}</p>`;
+    html += `<p><strong>Bet Amount per Color:</strong> ${calc.betAmount ? calc.betAmount.toFixed(4) : '0'} ${gameState.gameMode === 'solana' ? 'SOL' : 'points'}</p>`;
+    html += `<p><strong>Total Bet:</strong> ${calc.totalBet ? calc.totalBet.toFixed(4) : '0'} ${gameState.gameMode === 'solana' ? 'SOL' : 'points'}</p>`;
+    html += `<p><strong>Game Mode:</strong> ${calc.mode === 'timeattack' ? 'Time Attack' : 'Normal'}</p>`;
+    html += '</div>';
+
+    // Calculation Details
+    if (calc.totalWin !== undefined) {
+        html += '<div class="fairness-section">';
+        html += '<h3>📊 Payout Calculation</h3>';
+        
+        if (calc.totalWin > 0) {
+            html += '<div class="fairness-calculation">';
+            
+            calc.selectedColors.forEach(color => {
+                const matches = data.diceResults.filter(r => r === color).length;
+                if (matches > 0) {
+                    const isJackpot = matches === 3 && data.diceResults[0] === data.diceResults[1] && data.diceResults[1] === data.diceResults[2] && data.diceResults[0] === color;
+                    html += `<div class="fairness-calculation-line"><strong>${colorNames[color]}:</strong> ${matches} match(es)</div>`;
+                    
+                    if (isJackpot) {
+                        const jackpotMultiplier = payouts[calc.mode]['3jackpot'];
+                        html += `<div class="fairness-calculation-line">  → Jackpot! Bet + (Bet × ${jackpotMultiplier})</div>`;
+                        html += `<div class="fairness-calculation-line">  → ${calc.betAmount.toFixed(4)} + (${calc.betAmount.toFixed(4)} × ${jackpotMultiplier}) = ${(calc.betAmount + calc.betAmount * jackpotMultiplier).toFixed(4)}</div>`;
+                    } else {
+                        const multiplier = payouts[calc.mode][1];
+                        html += `<div class="fairness-calculation-line">  → Bet + (Bet × ${multiplier} × ${matches})</div>`;
+                        html += `<div class="fairness-calculation-line">  → ${calc.betAmount.toFixed(4)} + (${calc.betAmount.toFixed(4)} × ${multiplier} × ${matches}) = ${(calc.betAmount + calc.betAmount * multiplier * matches).toFixed(4)}</div>`;
+                    }
+                } else {
+                    html += `<div class="fairness-calculation-line"><strong>${colorNames[color]}:</strong> No match - Loss</div>`;
+                }
+            });
+            
+            html += '<div class="fairness-calculation-line" style="margin-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 0.5rem;">';
+            html += `<strong>Total Return:</strong> ${calc.totalWin.toFixed(4)} ${gameState.gameMode === 'solana' ? 'SOL' : 'points'}</div>`;
+            html += `<div class="fairness-calculation-line"><strong>Net Winnings:</strong> ${calc.netWinnings >= 0 ? '+' : ''}${calc.netWinnings.toFixed(4)} ${gameState.gameMode === 'solana' ? 'SOL' : 'points'}</div>`;
+            
+            html += '</div>';
+        } else {
+            html += '<p>No matches - Better luck next time!</p>';
+        }
+        
+        html += '</div>';
+    }
+
+    // House Edge Info
+    html += '<div class="fairness-section">';
+    html += '<h3>⚖️ House Edge</h3>';
+    html += `<p><strong>${calc.mode === 'timeattack' ? 'Time Attack' : 'Normal'} Mode:</strong> ${calc.mode === 'timeattack' ? '3%' : '5%'} house edge</p>`;
+    html += '<p>House edge ensures the game remains sustainable while providing fair payouts to players.</p>';
+    html += '</div>';
+
+    content.innerHTML = html;
+    modal.classList.add('show');
+}
+
+// Hide fairness modal
+function hideFairnessModal() {
+    const modal = document.getElementById('fairnessModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
 }
 
 // Initialize on load

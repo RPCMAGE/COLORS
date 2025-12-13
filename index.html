@@ -231,6 +231,7 @@
                 <span class="wallet-address" id="walletAddress"></span>
                 <button class="wallet-connect-btn" id="walletConnectBtn">Connect Wallet</button>
             </div>
+            <button class="info-btn" id="infoBtn" title="Game Info & Rules">ℹ️</button>
             <div class="volume-control">
                 <label for="volumeSlider" class="volume-label">🔊</label>
                 <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="40" step="1">
@@ -328,7 +329,59 @@
             <div class="result-content">
                 <h3 id="resultTitle"></h3>
                 <p id="resultText"></p>
+                <button class="result-fairness-btn" id="resultFairnessBtn">View Fairness</button>
                 <button class="result-ok-btn" id="resultOkBtn">OK</button>
+            </div>
+        </div>
+
+        <!-- Game Info Modal -->
+        <div class="info-modal" id="infoModal">
+            <div class="info-modal-content">
+                <div class="info-modal-header">
+                    <h2>🎲 COLORS Game Rules</h2>
+                    <button class="info-modal-close" id="infoModalClose">×</button>
+                </div>
+                <div class="info-modal-body">
+                    <h3>How to Play</h3>
+                    <p>Bet on up to 3 colors from 6 options: Yellow, Orange, Pink, Blue, Green, Red.</p>
+                    <p>Three dice are rolled. Win if any of your selected colors match the dice results!</p>
+                    
+                    <h3>Payouts</h3>
+                    <div class="payout-info">
+                        <h4>Normal Mode (5% house edge)</h4>
+                        <ul>
+                            <li>1 match: Bet + (Bet × 1.04)</li>
+                            <li>2 matches: Bet + (Bet × 1.04 × 2)</li>
+                            <li>3 matches (Jackpot): Bet + (Bet × 4.5)</li>
+                        </ul>
+                        <h4>Time Attack Mode (3% house edge)</h4>
+                        <ul>
+                            <li>1 match: Bet + (Bet × 1.08)</li>
+                            <li>2 matches: Bet + (Bet × 1.08 × 2)</li>
+                            <li>3 matches (Jackpot): Bet + (Bet × 5.0)</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Game Modes</h3>
+                    <p><strong>Normal:</strong> Standard pace, safer multipliers for longer sessions.</p>
+                    <p><strong>Time Attack:</strong> Fast-paced mode with 10-second timer. Higher multipliers. Skip 2 rounds if you don't bet in time!</p>
+                    
+                    <h3>Fairness</h3>
+                    <p>All dice rolls use cryptographically secure random number generation. View the "Fairness" details after each roll to see the exact results and calculations.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fairness Display Modal -->
+        <div class="fairness-modal" id="fairnessModal">
+            <div class="fairness-modal-content">
+                <div class="fairness-modal-header">
+                    <h2>🔍 Fairness Verification</h2>
+                    <button class="fairness-modal-close" id="fairnessModalClose">×</button>
+                </div>
+                <div class="fairness-modal-body" id="fairnessContent">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
             </div>
         </div>
 
