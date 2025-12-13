@@ -635,17 +635,24 @@ h1, h2, h3, h4, h5, h6 {
 /* Timer Display */
 .timer-display {
     position: fixed;
-    top: 100px;
+    top: 140px;
     right: 2rem;
-    width: 200px;
+    width: 250px;
     opacity: 0;
-    transition: opacity 0.3s;
-    z-index: 1000;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 10000;
     pointer-events: none;
+    background: rgba(26, 13, 46, 0.9);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 2px solid var(--red);
+    box-shadow: 0 0 20px rgba(230, 57, 70, 0.6);
 }
 
 .timer-display.active {
     opacity: 1;
+    visibility: visible;
     display: block;
 }
 

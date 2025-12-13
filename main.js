@@ -983,19 +983,27 @@ function startTimeAttackTimer() {
     const timerFill = document.getElementById('timerFill');
     const timerText = document.getElementById('timerText');
     
-    if (!timerDisplay || !timerFill || !timerText) {
-        console.warn('Timer elements not found');
+    if (!timerDisplay) {
+        console.error('Timer display element not found!');
         return;
     }
     
-    // Make sure timer is visible
-    timerDisplay.classList.add('active');
+    if (!timerFill || !timerText) {
+        console.error('Timer fill or text element not found!');
+        return;
+    }
+    
+    // Make sure timer is visible - force it
+    timerDisplay.style.opacity = '1';
+    timerDisplay.style.visibility = 'visible';
     timerDisplay.style.display = 'block';
+    timerDisplay.classList.add('active');
+    
     timerText.textContent = gameState.timeLeft;
     timerFill.style.width = '100%';
     timerFill.style.background = 'linear-gradient(90deg, var(--red), var(--orange))';
     
-    console.log('Timer started, time left:', gameState.timeLeft);
+    console.log('Timer started, time left:', gameState.timeLeft, 'Display:', timerDisplay);
     
     gameState.timerInterval = setInterval(() => {
         gameState.timeLeft--;
@@ -1007,9 +1015,13 @@ function startTimeAttackTimer() {
         if (gameState.timeLeft <= 3) {
             timerFill.style.background = 'linear-gradient(90deg, var(--red), #ff0000)';
             timerFill.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.8)';
+            timerDisplay.style.borderColor = '#ff0000';
+            timerDisplay.style.boxShadow = '0 0 30px rgba(255, 0, 0, 0.8)';
         } else {
             timerFill.style.background = 'linear-gradient(90deg, var(--red), var(--orange))';
             timerFill.style.boxShadow = '0 0 10px rgba(230, 57, 70, 0.5)';
+            timerDisplay.style.borderColor = 'var(--red)';
+            timerDisplay.style.boxShadow = '0 0 20px rgba(230, 57, 70, 0.6)';
         }
         
         if (gameState.timeLeft <= 0) {
@@ -1037,6 +1049,8 @@ function stopTimer() {
     const timerDisplay = document.getElementById('timerDisplay');
     if (timerDisplay) {
         timerDisplay.classList.remove('active');
+        timerDisplay.style.opacity = '0';
+        timerDisplay.style.visibility = 'hidden';
     }
 }
 
