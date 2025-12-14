@@ -56,6 +56,10 @@ function init() {
         initBackgroundMusic();
         setupVolumeControl();
         
+        // Update dice size on load and resize
+        updateDiceSize();
+        window.addEventListener('resize', updateDiceSize);
+        
         // Start music on first click anywhere
         const startMusicOnce = () => {
             const bgMusic = document.getElementById('backgroundMusic');
@@ -625,6 +629,35 @@ function getDiceTransform(color) {
         red: 'rotateX(90deg) rotateY(0deg)'
     };
     return transforms[color] || 'rotateY(0deg) rotateX(0deg)';
+}
+
+// Update dice size for responsive design
+function updateDiceSize() {
+    const diceElements = document.querySelectorAll('.dice');
+    const diceFaces = document.querySelectorAll('.dice-face');
+    
+    // Check if mobile
+    if (window.innerWidth <= 768) {
+        diceElements.forEach(die => {
+            die.style.width = '150px';
+            die.style.height = '150px';
+        });
+        diceFaces.forEach(face => {
+            face.style.width = '150px';
+            face.style.height = '150px';
+            face.style.fontSize = '2.5rem';
+        });
+    } else {
+        diceElements.forEach(die => {
+            die.style.width = '250px';
+            die.style.height = '250px';
+        });
+        diceFaces.forEach(face => {
+            face.style.width = '250px';
+            face.style.height = '250px';
+            face.style.fontSize = '4rem';
+        });
+    }
 }
 
 // Calculate results
