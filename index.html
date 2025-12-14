@@ -250,68 +250,71 @@
 
         <!-- Main Layout: Dice, Colors, Controls -->
         <div class="main-game-layout">
-            <!-- Left: Big Dice -->
-            <div class="dice-zone">
-                <div class="dice-container">
-                    <div class="dice" id="dice1">
-                        <div class="dice-face" data-face="yellow">Y</div>
-                        <div class="dice-face" data-face="orange">O</div>
-                        <div class="dice-face" data-face="pink">P</div>
-                        <div class="dice-face" data-face="blue">B</div>
-                        <div class="dice-face" data-face="green">G</div>
-                        <div class="dice-face" data-face="red">R</div>
+            <!-- Left Side: Dice and Colors -->
+            <div class="left-panel">
+                <!-- Big Dice -->
+                <div class="dice-zone">
+                    <div class="dice-container">
+                        <div class="dice" id="dice1">
+                            <div class="dice-face" data-face="yellow">Y</div>
+                            <div class="dice-face" data-face="orange">O</div>
+                            <div class="dice-face" data-face="pink">P</div>
+                            <div class="dice-face" data-face="blue">B</div>
+                            <div class="dice-face" data-face="green">G</div>
+                            <div class="dice-face" data-face="red">R</div>
+                        </div>
+                        <div class="dice" id="dice2">
+                            <div class="dice-face" data-face="yellow">Y</div>
+                            <div class="dice-face" data-face="orange">O</div>
+                            <div class="dice-face" data-face="pink">P</div>
+                            <div class="dice-face" data-face="blue">B</div>
+                            <div class="dice-face" data-face="green">G</div>
+                            <div class="dice-face" data-face="red">R</div>
+                        </div>
+                        <div class="dice" id="dice3">
+                            <div class="dice-face" data-face="yellow">Y</div>
+                            <div class="dice-face" data-face="orange">O</div>
+                            <div class="dice-face" data-face="pink">P</div>
+                            <div class="dice-face" data-face="blue">B</div>
+                            <div class="dice-face" data-face="green">G</div>
+                            <div class="dice-face" data-face="red">R</div>
+                        </div>
                     </div>
-                    <div class="dice" id="dice2">
-                        <div class="dice-face" data-face="yellow">Y</div>
-                        <div class="dice-face" data-face="orange">O</div>
-                        <div class="dice-face" data-face="pink">P</div>
-                        <div class="dice-face" data-face="blue">B</div>
-                        <div class="dice-face" data-face="green">G</div>
-                        <div class="dice-face" data-face="red">R</div>
-                    </div>
-                    <div class="dice" id="dice3">
-                        <div class="dice-face" data-face="yellow">Y</div>
-                        <div class="dice-face" data-face="orange">O</div>
-                        <div class="dice-face" data-face="pink">P</div>
-                        <div class="dice-face" data-face="blue">B</div>
-                        <div class="dice-face" data-face="green">G</div>
-                        <div class="dice-face" data-face="red">R</div>
+                </div>
+
+                <!-- Color Buttons Below Dice -->
+                <div class="betting-area">
+                    <h3 class="betting-title">Select Colors (Up to 3)</h3>
+                    <div class="color-buttons">
+                        <button class="color-btn" data-color="yellow">
+                            <span class="color-name">Yellow</span>
+                            <span class="bet-amount" data-color="yellow">0</span>
+                        </button>
+                        <button class="color-btn" data-color="orange">
+                            <span class="color-name">Orange</span>
+                            <span class="bet-amount" data-color="orange">0</span>
+                        </button>
+                        <button class="color-btn" data-color="pink">
+                            <span class="color-name">Pink</span>
+                            <span class="bet-amount" data-color="pink">0</span>
+                        </button>
+                        <button class="color-btn" data-color="blue">
+                            <span class="color-name">Blue</span>
+                            <span class="bet-amount" data-color="blue">0</span>
+                        </button>
+                        <button class="color-btn" data-color="green">
+                            <span class="color-name">Green</span>
+                            <span class="bet-amount" data-color="green">0</span>
+                        </button>
+                        <button class="color-btn" data-color="red">
+                            <span class="color-name">Red</span>
+                            <span class="bet-amount" data-color="red">0</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Middle: Smaller Color Buttons -->
-            <div class="betting-area">
-                <h3 class="betting-title">Select Colors (Up to 3)</h3>
-                <div class="color-buttons">
-                    <button class="color-btn" data-color="yellow">
-                        <span class="color-name">Yellow</span>
-                        <span class="bet-amount" data-color="yellow">0</span>
-                    </button>
-                    <button class="color-btn" data-color="orange">
-                        <span class="color-name">Orange</span>
-                        <span class="bet-amount" data-color="orange">0</span>
-                    </button>
-                    <button class="color-btn" data-color="pink">
-                        <span class="color-name">Pink</span>
-                        <span class="bet-amount" data-color="pink">0</span>
-                    </button>
-                    <button class="color-btn" data-color="blue">
-                        <span class="color-name">Blue</span>
-                        <span class="bet-amount" data-color="blue">0</span>
-                    </button>
-                    <button class="color-btn" data-color="green">
-                        <span class="color-name">Green</span>
-                        <span class="bet-amount" data-color="green">0</span>
-                    </button>
-                    <button class="color-btn" data-color="red">
-                        <span class="color-name">Red</span>
-                        <span class="bet-amount" data-color="red">0</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Right: Balance, Bet Controls, Roll Button -->
+            <!-- Right Side: Balance, Bet Controls, Roll Button -->
             <div class="controls-panel">
                 <div class="balance-display">
                     <span class="label">Balance:</span>
