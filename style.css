@@ -236,7 +236,7 @@ h1, h2, h3, h4, h5, h6 {
 .game-container {
     max-width: 100%;
     margin: 0 auto;
-    padding: clamp(6rem, 8vh, 10rem) clamp(1rem, 2vw, 2rem) clamp(0.5rem, 1vh, 1rem) clamp(1rem, 2vw, 2rem);
+    padding: clamp(1rem, 2vh, 2rem) clamp(1rem, 2vw, 2rem);
     position: relative;
     z-index: 1;
     height: calc(100vh - 120px);
@@ -245,14 +245,15 @@ h1, h2, h3, h4, h5, h6 {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Main Game Layout */
 .main-game-layout {
     display: flex;
     gap: clamp(1rem, 2vw, 2rem);
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     flex-wrap: wrap;
     width: 100%;
@@ -1134,14 +1135,18 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .game-container {
-        padding: clamp(3rem, 6vh, 5rem) 0.75rem 0.5rem 0.75rem;
+        padding: clamp(1rem, 2vh, 1.5rem) 0.75rem;
         height: calc(100vh - 80px);
         max-height: calc(100vh - 80px);
         overflow-y: hidden;
+        justify-content: center;
+        align-items: center;
     }
 
     .main-game-layout {
         gap: clamp(0.75rem, 1.5vh, 1rem);
+        align-items: center;
+        justify-content: center;
     }
 
     .dice-zone {
@@ -1211,12 +1216,16 @@ h1, h2, h3, h4, h5, h6 {
     .game-container {
         height: calc(100vh - 70px);
         max-height: calc(100vh - 70px);
-        padding: clamp(2.5rem, 5vh, 4rem) 0.5rem 0.5rem 0.5rem;
+        padding: clamp(1rem, 2vh, 1.5rem) 0.5rem;
         overflow-y: hidden;
+        justify-content: center;
+        align-items: center;
     }
 
     .main-game-layout {
         gap: clamp(0.5rem, 1vh, 0.75rem);
+        align-items: center;
+        justify-content: center;
     }
 
     .left-panel {
