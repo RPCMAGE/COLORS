@@ -12,6 +12,7 @@ const gameState = {
     timeLeft: 10,
     skippedRounds: 0,
     volume: 0.4, // Default volume (40%)
+    musicPlaying: false, // Music starts off
     resultsCalculated: false, // Flag to prevent double calculation
     lastRollData: null // Store last roll data for fairness display
 };
@@ -54,23 +55,11 @@ function init() {
         }
         
         initBackgroundMusic();
-        setupVolumeControl();
+        setupMusicToggle();
         
         // Update dice size on load and resize
         updateDiceSize();
         window.addEventListener('resize', updateDiceSize);
-        
-        // Start music on first click anywhere
-        const startMusicOnce = () => {
-            const bgMusic = document.getElementById('backgroundMusic');
-            if (bgMusic && bgMusic.paused) {
-                bgMusic.play().catch(() => {});
-            }
-            document.removeEventListener('click', startMusicOnce);
-            document.removeEventListener('touchstart', startMusicOnce);
-        };
-        document.addEventListener('click', startMusicOnce, { once: true });
-        document.addEventListener('touchstart', startMusicOnce, { once: true });
     } catch (error) {
         console.error('Error initializing game:', error);
     }
@@ -82,37 +71,49 @@ function initBackgroundMusic() {
     if (bgMusic) {
         bgMusic.volume = gameState.volume;
         bgMusic.preload = 'auto';
+        bgMusic.loop = true;
+        // Music starts off - don't auto-play
+    }
+}
+
+// Setup music toggle button
+function setupMusicToggle() {
+    const musicToggleBtn = document.getElementById('musicToggleBtn');
+    const bgMusic = document.getElementById('backgroundMusic');
+    
+    if (musicToggleBtn && bgMusic) {
+        // Set initial button text
+        updateMusicButtonText();
         
-        // Try to play - will fail if autoplay is blocked (expected)
-        bgMusic.play().catch(() => {
-            // Autoplay blocked - this is normal, music will start on first user interaction
+        musicToggleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (gameState.musicPlaying) {
+                // Stop music
+                bgMusic.pause();
+                gameState.musicPlaying = false;
+                musicToggleBtn.classList.remove('active');
+            } else {
+                // Start music
+                bgMusic.play().catch((error) => {
+                    console.error('Error playing music:', error);
+                    alert('Could not play music. Please check your browser settings.');
+                });
+                gameState.musicPlaying = true;
+                musicToggleBtn.classList.add('active');
+            }
+            
+            updateMusicButtonText();
         });
     }
 }
 
-// Setup volume control
-function setupVolumeControl() {
-    const volumeSlider = document.getElementById('volumeSlider');
-    const bgMusic = document.getElementById('backgroundMusic');
-    
-    if (volumeSlider && bgMusic) {
-        // Set initial volume
-        volumeSlider.value = gameState.volume * 100;
-        
-        volumeSlider.addEventListener('input', function(e) {
-            const volume = parseFloat(e.target.value) / 100;
-            gameState.volume = volume;
-            
-            // Update background music volume
-            bgMusic.volume = volume;
-            
-            // Try to play if not already playing (for autoplay-blocked scenarios)
-            if (bgMusic.paused && volume > 0) {
-                bgMusic.play().catch(() => {
-                    // Ignore play errors - user interaction may be required
-                });
-            }
-        });
+// Update music button text based on state
+function updateMusicButtonText() {
+    const musicToggleBtn = document.getElementById('musicToggleBtn');
+    if (musicToggleBtn) {
+        musicToggleBtn.textContent = gameState.musicPlaying ? 'Stop music' : 'Play music';
     }
 }
 
