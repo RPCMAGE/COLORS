@@ -751,28 +751,31 @@ h1, h2, h3, h4, h5, h6 {
     background: rgba(26, 13, 46, 0.95);
     border: 3px solid var(--accent);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 1.5rem;
     max-width: 600px;
     width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
+    max-height: 85vh;
+    overflow-y: hidden;
     box-shadow: 0 0 40px rgba(255, 94, 175, 0.5);
+    display: flex;
+    flex-direction: column;
 }
 
 .info-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     border-bottom: 2px solid var(--accent);
-    padding-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    flex-shrink: 0;
 }
 
 .info-modal-header h2 {
     font-family: 'Orbitron', sans-serif;
     color: var(--accent);
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
 }
 
 .info-modal-close {
@@ -798,43 +801,48 @@ h1, h2, h3, h4, h5, h6 {
 
 .info-modal-body {
     color: #fff;
-    line-height: 1.6;
+    line-height: 1.4;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 0.5rem;
 }
 
 .info-modal-body h3 {
     font-family: 'Orbitron', sans-serif;
     color: var(--accent);
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    font-size: 1.3rem;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+    font-size: 1.1rem;
 }
 
 .info-modal-body h4 {
     font-family: 'Orbitron', sans-serif;
     color: var(--accent-secondary);
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
 }
 
 .info-modal-body p {
-    margin-bottom: 1rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
 }
 
 .info-modal-body ul {
-    margin-left: 1.5rem;
-    margin-bottom: 1rem;
+    margin-left: 1.2rem;
+    margin-bottom: 0.6rem;
 }
 
 .info-modal-body li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
 }
 
 .payout-info {
     background: rgba(255, 255, 255, 0.05);
-    padding: 1rem;
+    padding: 0.75rem;
     border-radius: 10px;
-    margin: 1rem 0;
+    margin: 0.6rem 0;
 }
 
 /* Fairness Modal */
@@ -860,28 +868,31 @@ h1, h2, h3, h4, h5, h6 {
     background: rgba(26, 13, 46, 0.95);
     border: 3px solid var(--green);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 1.5rem;
     max-width: 700px;
     width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
+    max-height: 85vh;
+    overflow-y: hidden;
     box-shadow: 0 0 40px rgba(42, 157, 143, 0.5);
+    display: flex;
+    flex-direction: column;
 }
 
 .fairness-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     border-bottom: 2px solid var(--green);
-    padding-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    flex-shrink: 0;
 }
 
 .fairness-modal-header h2 {
     font-family: 'Orbitron', sans-serif;
     color: var(--green);
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
 }
 
 .fairness-modal-close {
@@ -907,12 +918,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .fairness-modal-body {
     color: #fff;
-    line-height: 1.6;
+    line-height: 1.4;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 0.5rem;
 }
 
 .fairness-section {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
 }
@@ -921,8 +935,8 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Orbitron', sans-serif;
     color: var(--green);
     margin-top: 0;
-    margin-bottom: 0.75rem;
-    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
 }
 
 .fairness-dice-results {
@@ -947,14 +961,15 @@ h1, h2, h3, h4, h5, h6 {
 .fairness-calculation {
     font-family: 'Courier New', monospace;
     background: rgba(0, 0, 0, 0.3);
-    padding: 1rem;
+    padding: 0.75rem;
     border-radius: 8px;
-    margin: 0.5rem 0;
-    font-size: 0.9rem;
+    margin: 0.4rem 0;
+    font-size: 0.85rem;
 }
 
 .fairness-calculation-line {
-    margin: 0.25rem 0;
+    margin: 0.2rem 0;
+    font-size: 0.85rem;
 }
 
 /* Result Fairness Button */
@@ -1185,13 +1200,23 @@ h1, h2, h3, h4, h5, h6 {
     .info-modal-content,
     .fairness-modal-content {
         max-width: 95%;
-        padding: 1.5rem;
-        max-height: 85vh;
+        padding: 1rem;
+        max-height: 90vh;
     }
 
     .info-modal-header h2,
     .fairness-modal-header h2 {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
+    }
+
+    .info-modal-body h3,
+    .fairness-section h3 {
+        font-size: 1rem;
+    }
+
+    .info-modal-body p,
+    .fairness-modal-body p {
+        font-size: 0.85rem;
     }
 
     .fairness-dice-results {
