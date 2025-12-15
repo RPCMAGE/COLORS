@@ -252,7 +252,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Main Game Layout */
 .main-game-layout {
     display: flex;
-    gap: clamp(2rem, 4vw, 3rem);
+    gap: clamp(2.5rem, 5vw, 4rem);
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
