@@ -49,6 +49,79 @@ body::after {
     pointer-events: none;
 }
 
+/* Intro Screen */
+.intro-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg-dark);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.intro-screen.hidden {
+    display: none;
+}
+
+/* Hide header on intro screen */
+.intro-screen ~ .header {
+    z-index: 1001;
+}
+
+.intro-screen.hidden {
+    display: none;
+}
+
+.intro-illustration-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.intro-illustration {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* Clickable Arcade Area - positioned over the arcade machine in the center */
+.arcade-clickable-area {
+    position: absolute;
+    /* Position over the arcade machine - adjust these values based on the image layout */
+    /* Center of screen, slightly below center for the arcade machine */
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20%;
+    height: 25%;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.arcade-clickable-area:hover {
+    background: rgba(255, 94, 175, 0.3);
+    box-shadow: 0 0 30px rgba(255, 94, 175, 0.6), inset 0 0 20px rgba(255, 94, 175, 0.4);
+    border: 2px solid rgba(255, 94, 175, 0.8);
+}
+
+.arcade-clickable-area:active {
+    transform: translate(-50%, -50%) scale(0.95);
+    background: rgba(255, 94, 175, 0.5);
+}
+
 h1, h2, h3, h4, h5, h6 {
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
 }

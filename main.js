@@ -40,6 +40,30 @@ const audioFiles = {
     win: ['Assets/Audio/Win sound 1.mp3', 'Assets/Audio/Win sound 2.mp3', 'Assets/Audio/Win sound 3.mp3', 'Assets/Audio/Win sound 4.mp3', 'Assets/Audio/Win sound 5.mp3', 'Assets/Audio/Win sound 6.mp3']
 };
 
+// Initialize intro screen
+function initIntroScreen() {
+    const introScreen = document.getElementById('introScreen');
+    const arcadeClickable = document.getElementById('arcadeClickable');
+    const mainGame = document.getElementById('mainGame');
+    
+    if (arcadeClickable && introScreen && mainGame) {
+        arcadeClickable.addEventListener('click', function() {
+            // Hide intro screen
+            introScreen.classList.add('hidden');
+            // Show main game
+            mainGame.style.display = 'block';
+            // Initialize game after showing
+            init();
+        });
+    } else {
+        // If intro screen elements don't exist, just initialize the game
+        if (mainGame) {
+            mainGame.style.display = 'block';
+        }
+        init();
+    }
+}
+
 // Initialize game
 function init() {
     try {
@@ -1189,5 +1213,5 @@ function hideFairnessModal() {
 }
 
 // Initialize on load
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', initIntroScreen);
 
