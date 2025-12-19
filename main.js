@@ -602,14 +602,14 @@ function showDiceResult(dieElement, color) {
     // Remove rolling class to stop GIF animation
     dieElement.classList.remove('rolling');
     
-    // Set the color attribute for CSS filter
+    // Set the color attribute - CSS will handle showing the correct color from Colors.png sprite
     dieElement.setAttribute('data-color', color);
     
-    // Reset background to static dice image
-    dieElement.style.backgroundImage = "url('Assets/Images/Dice.png')";
-    dieElement.style.backgroundSize = 'contain';
-    dieElement.style.backgroundRepeat = 'no-repeat';
-    dieElement.style.backgroundPosition = 'center';
+    // Remove any inline styles to let CSS handle the background
+    dieElement.style.backgroundImage = '';
+    dieElement.style.backgroundSize = '';
+    dieElement.style.backgroundRepeat = '';
+    dieElement.style.backgroundPosition = '';
 }
 
 
@@ -918,13 +918,15 @@ function createConfettiParticle() {
 function resetDice() {
     const diceElements = document.querySelectorAll('.dice');
     diceElements.forEach(die => {
-        die.style.transform = 'rotateY(0deg) rotateX(0deg)';
-        const faces = die.querySelectorAll('.dice-face');
-        faces.forEach(face => {
-            face.style.display = 'flex';
-            face.classList.remove('result-face');
-            face.style.boxShadow = '';
-        });
+        // Remove color attribute to show default Dice.png
+        die.removeAttribute('data-color');
+        // Remove rolling class if present
+        die.classList.remove('rolling');
+        // Reset any inline styles
+        die.style.backgroundImage = '';
+        die.style.backgroundSize = '';
+        die.style.backgroundRepeat = '';
+        die.style.backgroundPosition = '';
     });
 }
 

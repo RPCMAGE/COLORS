@@ -302,7 +302,7 @@ h1, h2, h3, h4, h5, h6 {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    transition: filter 0.3s ease;
+    transition: background-position 0.3s ease;
 }
 
 .dice.rolling {
@@ -316,29 +316,41 @@ h1, h2, h3, h4, h5, h6 {
     display: none; /* Hide the old 3D faces */
 }
 
-/* Color filters for dice results */
+/* Color sprite positions from Colors.png (2x3 grid: top row = Yellow, Orange, Pink; bottom row = Blue, Green, Red) */
 .dice[data-color="yellow"] {
-    filter: hue-rotate(0deg) saturate(1.2) brightness(1.1);
+    background-image: url('Assets/Images/Colors.png');
+    background-size: 300% 200%; /* 3 columns, 2 rows */
+    background-position: 0% 0%; /* Top-left */
 }
 
 .dice[data-color="orange"] {
-    filter: hue-rotate(30deg) saturate(1.2) brightness(1.1);
+    background-image: url('Assets/Images/Colors.png');
+    background-size: 300% 200%;
+    background-position: 50% 0%; /* Top-middle */
 }
 
 .dice[data-color="pink"] {
-    filter: hue-rotate(300deg) saturate(1.2) brightness(1.1);
+    background-image: url('Assets/Images/Colors.png');
+    background-size: 300% 200%;
+    background-position: 100% 0%; /* Top-right */
 }
 
 .dice[data-color="blue"] {
-    filter: hue-rotate(200deg) saturate(1.2) brightness(1.1);
+    background-image: url('Assets/Images/Colors.png');
+    background-size: 300% 200%;
+    background-position: 0% 100%; /* Bottom-left */
 }
 
 .dice[data-color="green"] {
-    filter: hue-rotate(120deg) saturate(1.2) brightness(1.1);
+    background-image: url('Assets/Images/Colors.png');
+    background-size: 300% 200%;
+    background-position: 50% 100%; /* Bottom-middle */
 }
 
 .dice[data-color="red"] {
-    filter: hue-rotate(0deg) saturate(1.5) brightness(1.1);
+    background-image: url('Assets/Images/Colors.png');
+    background-size: 300% 200%;
+    background-position: 100% 100%; /* Bottom-right */
 }
 
 /* Roll Button */
