@@ -99,8 +99,8 @@ body::after {
 .arcade-clickable-area {
     position: absolute;
     /* Position over the arcade machine - adjusted to match red highlight */
-    top: 37%; /* Distance from top of screen (37% down from top) */
-    left: 45%; /* Distance from left of screen */
+    top: 36%; /* Distance from top of screen (36% down from top) - moved 1% higher */
+    left: 46%; /* Distance from left of screen - moved 1% to the right */
     transform: translate(-50%, -50%);
     width: 16%; /* Increased from 15% */
     height: 13%; /* Reduced from 15% - bottom will be higher, top stays same */
