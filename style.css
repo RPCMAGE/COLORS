@@ -295,8 +295,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dice {
-    width: clamp(150px, 18vw, 250px);
-    height: clamp(150px, 18vw, 250px);
+    width: clamp(200px, 25vw, 350px);
+    height: clamp(200px, 25vw, 350px);
     position: relative;
     background-image: url('Assets/Images/Dice.png');
     background-size: contain;
@@ -1129,8 +1129,8 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .dice {
-        width: 150px;
-        height: 150px;
+        width: 200px;
+        height: 200px;
     }
 
     .dice-face {
@@ -1292,8 +1292,8 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .dice {
-        width: 70px;
-        height: 70px;
+        width: 100px;
+        height: 100px;
     }
 
     .dice-face {
