@@ -298,46 +298,47 @@ h1, h2, h3, h4, h5, h6 {
     width: clamp(150px, 18vw, 250px);
     height: clamp(150px, 18vw, 250px);
     position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.1s;
+    background-image: url('Assets/Images/Dice.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: filter 0.3s ease;
 }
 
 .dice.rolling {
-    animation: rollDice 1.5s ease-in-out;
-}
-
-@keyframes rollDice {
-    0% { transform: rotateX(0) rotateY(0); }
-    25% { transform: rotateX(360deg) rotateY(180deg); }
-    50% { transform: rotateX(720deg) rotateY(360deg); }
-    75% { transform: rotateX(1080deg) rotateY(540deg); }
-    100% { transform: rotateX(1440deg) rotateY(720deg); }
+    background-image: url('Assets/Images/Dice rotation.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .dice-face {
-    position: absolute;
-    width: clamp(150px, 18vw, 250px);
-    height: clamp(150px, 18vw, 250px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(2.5rem, 4vw, 4rem);
-    font-weight: 700;
-    border: clamp(2px, 0.3vw, 4px) solid rgba(255, 255, 255, 0.3);
-    border-radius: clamp(12px, 1.5vw, 20px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(255, 255, 255, 0.1);
-    backface-visibility: hidden;
+    display: none; /* Hide the old 3D faces */
 }
 
-.dice-face[data-face="yellow"] { background: var(--yellow); transform: rotateY(0deg) translateZ(clamp(75px, 9vw, 125px)); }
-.dice-face[data-face="orange"] { background: var(--orange); transform: rotateY(90deg) translateZ(clamp(75px, 9vw, 125px)); }
-.dice-face[data-face="pink"] { background: var(--pink); transform: rotateY(180deg) translateZ(clamp(75px, 9vw, 125px)); }
-.dice-face[data-face="blue"] { background: var(--blue); transform: rotateY(-90deg) translateZ(clamp(75px, 9vw, 125px)); }
-.dice-face[data-face="green"] { background: var(--green); transform: rotateX(90deg) translateZ(clamp(75px, 9vw, 125px)); }
-.dice-face[data-face="red"] { background: var(--red); transform: rotateX(-90deg) translateZ(clamp(75px, 9vw, 125px)); }
+/* Color filters for dice results */
+.dice[data-color="yellow"] {
+    filter: hue-rotate(0deg) saturate(1.2) brightness(1.1);
+}
 
-.dice-face.result-face {
-    z-index: 10;
+.dice[data-color="orange"] {
+    filter: hue-rotate(30deg) saturate(1.2) brightness(1.1);
+}
+
+.dice[data-color="pink"] {
+    filter: hue-rotate(300deg) saturate(1.2) brightness(1.1);
+}
+
+.dice[data-color="blue"] {
+    filter: hue-rotate(200deg) saturate(1.2) brightness(1.1);
+}
+
+.dice[data-color="green"] {
+    filter: hue-rotate(120deg) saturate(1.2) brightness(1.1);
+}
+
+.dice[data-color="red"] {
+    filter: hue-rotate(0deg) saturate(1.5) brightness(1.1);
 }
 
 /* Roll Button */

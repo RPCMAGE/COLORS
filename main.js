@@ -578,7 +578,6 @@ async function rollDice() {
 
         // Stop animation and show results
         diceElements.forEach((die, index) => {
-            die.classList.remove('rolling');
             showDiceResult(die, gameState.diceResults[index]);
         });
 
@@ -600,65 +599,25 @@ async function rollDice() {
 
 // Show dice result
 function showDiceResult(dieElement, color) {
-    // Hide all faces first
-    const faces = dieElement.querySelectorAll('.dice-face');
-    faces.forEach(face => {
-        face.style.display = 'none';
-        face.classList.remove('result-face');
-    });
+    // Remove rolling class to stop GIF animation
+    dieElement.classList.remove('rolling');
     
-    // Show the result face
-    const resultFace = dieElement.querySelector(`[data-face="${color}"]`);
-    if (resultFace) {
-        resultFace.style.display = 'flex';
-        resultFace.classList.add('result-face');
-        // Position it to face forward with proper transform
-        dieElement.style.transform = getDiceTransform(color);
-        // Add glow effect
-        resultFace.style.boxShadow = '0 0 30px rgba(255, 255, 255, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.3)';
-    }
+    // Set the color attribute for CSS filter
+    dieElement.setAttribute('data-color', color);
+    
+    // Reset background to static dice image
+    dieElement.style.backgroundImage = "url('Assets/Images/Dice.png')";
+    dieElement.style.backgroundSize = 'contain';
+    dieElement.style.backgroundRepeat = 'no-repeat';
+    dieElement.style.backgroundPosition = 'center';
 }
 
-// Get dice transform for showing result
-function getDiceTransform(color) {
-    const transforms = {
-        yellow: 'rotateY(0deg) rotateX(0deg)',
-        orange: 'rotateY(-90deg) rotateX(0deg)',
-        pink: 'rotateY(180deg) rotateX(0deg)',
-        blue: 'rotateY(90deg) rotateX(0deg)',
-        green: 'rotateX(-90deg) rotateY(0deg)',
-        red: 'rotateX(90deg) rotateY(0deg)'
-    };
-    return transforms[color] || 'rotateY(0deg) rotateX(0deg)';
-}
 
 // Update dice size for responsive design
 function updateDiceSize() {
-    const diceElements = document.querySelectorAll('.dice');
-    const diceFaces = document.querySelectorAll('.dice-face');
-    
-    // Check if mobile
-    if (window.innerWidth <= 768) {
-        diceElements.forEach(die => {
-            die.style.width = '150px';
-            die.style.height = '150px';
-        });
-        diceFaces.forEach(face => {
-            face.style.width = '150px';
-            face.style.height = '150px';
-            face.style.fontSize = '2.5rem';
-        });
-    } else {
-        diceElements.forEach(die => {
-            die.style.width = '250px';
-            die.style.height = '250px';
-        });
-        diceFaces.forEach(face => {
-            face.style.width = '250px';
-            face.style.height = '250px';
-            face.style.fontSize = '4rem';
-        });
-    }
+    // Dice size is now controlled by CSS clamp() in style.css
+    // This function is kept for potential future use but doesn't need to do anything
+    // since background images scale automatically with the element size
 }
 
 // Calculate results
