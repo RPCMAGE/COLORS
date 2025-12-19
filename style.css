@@ -1059,7 +1059,7 @@ h1, h2, h3, h4, h5, h6 {
         top: auto;
         order: 3;
         flex-direction: row;
-        gap: 0.5rem;
+        gap: 0.25rem;
         width: 100%;
         justify-content: center;
         max-width: 100%;
@@ -1125,7 +1125,7 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .dice-container {
-        gap: 0.5rem;
+        gap: 0.25rem;
     }
 
     .dice {
@@ -1317,7 +1317,7 @@ h1, h2, h3, h4, h5, h6 {
 
     .bottom-bar {
         padding: 0.6rem;
-        gap: 0.5rem;
+        gap: 0.25rem;
         margin: 0.5rem 0 0.25rem 0;
     }
 
