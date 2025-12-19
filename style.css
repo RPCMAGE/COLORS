@@ -290,7 +290,7 @@ h1, h2, h3, h4, h5, h6 {
 .dice-container {
     display: flex;
     justify-content: center;
-    gap: clamp(0.5rem, 1vw, 1rem);
+    gap: clamp(0.25rem, 0.5vw, 0.5rem);
     perspective: 1500px;
 }
 
