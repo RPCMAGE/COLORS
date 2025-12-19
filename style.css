@@ -320,37 +320,37 @@ h1, h2, h3, h4, h5, h6 {
 .dice[data-color="yellow"] {
     background-image: url('Assets/Images/Colors.png');
     background-size: 300% 200%; /* 3 columns, 2 rows */
-    background-position: 0% 0%; /* Top-left */
+    background-position: 0% 0%; /* Top-left (row 1, col 1) */
 }
 
 .dice[data-color="orange"] {
     background-image: url('Assets/Images/Colors.png');
     background-size: 300% 200%;
-    background-position: 50% 0%; /* Top-middle */
+    background-position: 33.33% 0%; /* Top-middle (row 1, col 2) */
 }
 
 .dice[data-color="pink"] {
     background-image: url('Assets/Images/Colors.png');
     background-size: 300% 200%;
-    background-position: 100% 0%; /* Top-right */
+    background-position: 66.66% 0%; /* Top-right (row 1, col 3) */
 }
 
 .dice[data-color="blue"] {
     background-image: url('Assets/Images/Colors.png');
     background-size: 300% 200%;
-    background-position: 0% 100%; /* Bottom-left */
+    background-position: 0% 50%; /* Bottom-left (row 2, col 1) */
 }
 
 .dice[data-color="green"] {
     background-image: url('Assets/Images/Colors.png');
     background-size: 300% 200%;
-    background-position: 50% 100%; /* Bottom-middle */
+    background-position: 33.33% 50%; /* Bottom-middle (row 2, col 2) */
 }
 
 .dice[data-color="red"] {
     background-image: url('Assets/Images/Colors.png');
     background-size: 300% 200%;
-    background-position: 100% 100%; /* Bottom-right */
+    background-position: 66.66% 50%; /* Bottom-right (row 2, col 3) */
 }
 
 /* Roll Button */
