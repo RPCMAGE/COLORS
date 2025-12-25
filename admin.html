@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - COLORS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- Password Protection Screen -->
+    <div class="admin-login-screen" id="loginScreen">
+        <div class="admin-login-container">
+            <h1>🔐 Admin Access</h1>
+            <p>Enter password to access the admin panel</p>
+            <input type="password" id="adminPassword" class="admin-password-input" placeholder="Password" autocomplete="off">
+            <button class="admin-login-btn" id="adminLoginBtn">Login</button>
+            <p class="admin-error" id="adminError"></p>
+            <a href="index.html" class="admin-back-link">← Back to Game</a>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel" style="display: none;">
+        <header class="admin-header">
+            <h1>🎮 COLORS Admin Panel</h1>
+            <div class="admin-header-controls">
+                <button class="admin-refresh-btn" id="refreshBtn">🔄 Refresh</button>
+                <button class="admin-clear-btn" id="clearBtn">🗑️ Clear Data</button>
+                <a href="index.html" class="admin-back-link">← Back to Game</a>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div class="admin-stats">
+                <div class="admin-stat-card">
+                    <h3>Total Transactions</h3>
+                    <p class="stat-value" id="totalTransactions">0</p>
+                </div>
+                <div class="admin-stat-card">
+                    <h3>Total Bet Volume</h3>
+                    <p class="stat-value" id="totalBetVolume">0</p>
+                </div>
+                <div class="admin-stat-card">
+                    <h3>Total Payouts</h3>
+                    <p class="stat-value" id="totalPayouts">0</p>
+                </div>
+                <div class="admin-stat-card">
+                    <h3>Net Profit</h3>
+                    <p class="stat-value" id="netProfit">0</p>
+                </div>
+            </div>
+
+            <div class="admin-transactions">
+                <h2>Transaction History</h2>
+                <div class="admin-filters">
+                    <select id="modeFilter" class="admin-filter">
+                        <option value="all">All Modes</option>
+                        <option value="demo-normal">Demo - Normal</option>
+                        <option value="demo-timeattack">Demo - Time Attack</option>
+                        <option value="solana-normal">Solana - Normal</option>
+                        <option value="solana-timeattack">Solana - Time Attack</option>
+                    </select>
+                    <input type="text" id="searchInput" class="admin-search" placeholder="Search transactions...">
+                </div>
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Bet Size</th>
+                                <th>Payout</th>
+                                <th>Mode</th>
+                                <th>Net</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTableBody">
+                            <tr>
+                                <td colspan="6" class="admin-empty">No transactions found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
+

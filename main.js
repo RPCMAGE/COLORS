@@ -644,6 +644,27 @@ function updateDiceSize() {
     // since background images scale automatically with the element size
 }
 
+// Transaction logging for admin panel
+function logTransaction(transactionData) {
+    try {
+        // Get existing transactions from localStorage
+        const transactions = JSON.parse(localStorage.getItem('gameTransactions') || '[]');
+        
+        // Add new transaction
+        transactions.push(transactionData);
+        
+        // Keep only last 1000 transactions to prevent localStorage from getting too large
+        if (transactions.length > 1000) {
+            transactions.shift(); // Remove oldest
+        }
+        
+        // Save back to localStorage
+        localStorage.setItem('gameTransactions', JSON.stringify(transactions));
+    } catch (error) {
+        console.error('Error logging transaction:', error);
+    }
+}
+
 // Calculate results
 function calculateResults() {
     // Prevent double calculation - must be rolling, have colors selected, and not already calculated
@@ -780,6 +801,18 @@ function calculateResults() {
 
     // Update balance display once
     updateBalance();
+    
+    // Log transaction for admin panel
+    logTransaction({
+        betSize: totalBet,
+        payout: totalWin,
+        mode: `${gameState.gameMode}-${gameState.mode}`, // e.g., "demo-normal", "solana-timeattack"
+        timestamp: new Date().toISOString(),
+        diceResults: results,
+        selectedColors: selectedColors,
+        betAmount: betAmount,
+        netWinnings: netWinnings
+    });
     
     // Mark rolling as complete
     gameState.isRolling = false;
