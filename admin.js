@@ -56,20 +56,8 @@ function initAdmin() {
         }
     });
 
-    // Refresh button
-    const refreshBtn = document.getElementById('refreshBtn');
-    refreshBtn.addEventListener('click', () => {
-        loadTransactions();
-    });
-
-    // Clear data button
-    const clearBtn = document.getElementById('clearBtn');
-    clearBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to clear all transaction data? This cannot be undone.')) {
-            localStorage.removeItem('gameTransactions');
-            loadTransactions();
-        }
-    });
+    // Refresh button (removed from UI)
+    // Clear data button (removed from UI)
 
     // Filter handlers
     const modeFilter = document.getElementById('modeFilter');
