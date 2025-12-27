@@ -84,10 +84,6 @@ body::after {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url('Assets/Images/Colors Illustration Animated.gif');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
 .intro-illustration {
