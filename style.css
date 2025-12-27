@@ -102,7 +102,7 @@ body::after {
     top: 34%; /* Distance from top of screen - moved up */
     left: 44%; /* Distance from left of screen - moved left */
     transform: translate(-50%, -50%);
-    width: 16%; /* Increased from 15% */
+    width: 17.5%; /* Stretched to the right */
     height: 12.5%; /* Reduced by 0.5% - bottom will be higher, top stays same */
     cursor: pointer;
     border-radius: 8px;
