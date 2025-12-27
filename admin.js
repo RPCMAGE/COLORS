@@ -102,9 +102,6 @@ function loadTransactions() {
         // Sort by timestamp (newest first)
         filteredTransactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         
-        // Update stats
-        updateStats(transactions);
-        
         // Display transactions
         displayTransactions(filteredTransactions);
     } catch (error) {
@@ -112,22 +109,6 @@ function loadTransactions() {
         document.getElementById('transactionsTableBody').innerHTML = 
             '<tr><td colspan="6" class="admin-empty">Error loading transactions</td></tr>';
     }
-}
-
-// Update statistics
-function updateStats(transactions) {
-    const totalTransactions = transactions.length;
-    const totalBetVolume = transactions.reduce((sum, t) => sum + (t.betSize || 0), 0);
-    const totalPayouts = transactions.reduce((sum, t) => sum + (t.payout || 0), 0);
-    const netProfit = totalBetVolume - totalPayouts;
-    
-    document.getElementById('totalTransactions').textContent = totalTransactions.toLocaleString();
-    document.getElementById('totalBetVolume').textContent = formatAmount(totalBetVolume);
-    document.getElementById('totalPayouts').textContent = formatAmount(totalPayouts);
-    
-    const netProfitEl = document.getElementById('netProfit');
-    netProfitEl.textContent = formatAmount(netProfit);
-    netProfitEl.style.color = netProfit >= 0 ? 'var(--green)' : 'var(--red)';
 }
 
 // Format amount (handles both points and SOL)
