@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="chat.css">
     <link rel="stylesheet" href="leaderboard.css">
-    <link rel="preload" as="image" href="./Assets/Images/Colors Illustration Animated.gif">
+    <link rel="preload" as="image" href="Assets/Images/ColorsIllustrationAnimated.gif">
     <!-- Process and Buffer Polyfills (required for Solana Web3.js in browser) -->
     <script>
         // Set up process polyfill first
@@ -244,7 +244,7 @@
     <!-- Intro Screen -->
     <div class="intro-screen" id="introScreen">
         <div class="intro-illustration-container">
-            <img src="./Assets/Images/Colors Illustration Animated.gif" alt="COLORS Arcade" class="intro-illustration" onload="console.log('GIF loaded successfully:', this.src);" onerror="console.error('GIF failed to load. Path:', this.src, 'Error:', event);">
+            <img src="Assets/Images/ColorsIllustrationAnimated.gif" alt="COLORS Arcade" class="intro-illustration">
             <div class="arcade-clickable-area" id="arcadeClickable"></div>
         </div>
     </div>
@@ -415,36 +415,6 @@
     </div>
     
     <script>
-        // Test if the animated GIF can be loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            const testImg = new Image();
-            const gifPath = './Assets/Images/Colors Illustration Animated.gif';
-            console.log('Testing GIF load from path:', gifPath);
-            testImg.onload = function() {
-                console.log('✅ GIF test load SUCCESS - file exists and is accessible');
-            };
-            testImg.onerror = function() {
-                console.error('❌ GIF test load FAILED - file not found or cannot be loaded');
-                console.error('Tried path:', gifPath);
-                // Try alternative paths
-                const altPaths = [
-                    'Assets/Images/Colors Illustration Animated.gif',
-                    '/Assets/Images/Colors Illustration Animated.gif',
-                    'Assets/Images/Colors%20Illustration%20Animated.gif'
-                ];
-                altPaths.forEach(path => {
-                    const altImg = new Image();
-                    altImg.onload = function() {
-                        console.log('✅ Alternative path works:', path);
-                    };
-                    altImg.onerror = function() {
-                        console.error('❌ Alternative path failed:', path);
-                    };
-                    altImg.src = path;
-                });
-            };
-            testImg.src = gifPath;
-        });
     </script>
     <script>
         // Allow Enter key to send chat messages and setup toggle button
