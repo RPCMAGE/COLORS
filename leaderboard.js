@@ -99,14 +99,24 @@
         }
     }
 
-    // Format currency
+    // Format currency - detects currency type based on value ranges
     function formatCurrency(amount) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(amount);
+        if (amount === 0) return '0 points';
+        
+        // If amount is very large (likely points), format as points
+        // If amount is small (likely SOL), format as SOL
+        // Threshold: values > 1000 are likely points, < 1000 are likely SOL
+        if (amount >= 1000) {
+            // Format as points (no decimals for large numbers, 2 decimals for smaller)
+            if (amount >= 10000) {
+                return amount.toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' points';
+            } else {
+                return amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' points';
+            }
+        } else {
+            // Format as SOL (4 decimal places)
+            return amount.toFixed(4) + ' SOL';
+        }
     }
 
     // Escape HTML

@@ -97,11 +97,19 @@
     opacity: 0.7;
 }
 
-/* Admin Panel */
+/* Admin Panel - Clean SaaS Design */
+body.admin-page {
+    background: #2d1b4e !important; /* Clean solid purple background */
+}
+
+body.admin-page::after {
+    display: none !important; /* Remove pixelated monitor screen background */
+}
+
 .admin-panel {
     height: 100vh;
     overflow: hidden;
-    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+    background: #2d1b4e; /* Clean solid purple background */
     color: #fff;
     padding: 2rem;
     font-family: 'Poppins', sans-serif;
@@ -160,6 +168,130 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
+    gap: 2rem;
+    overflow-y: auto;
+}
+
+/* Game Health Summary */
+.admin-health-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.admin-health-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.admin-health-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 94, 175, 0.3);
+    transform: translateY(-2px);
+}
+
+.admin-health-card h3 {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.health-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 0.5rem;
+}
+
+.health-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.health-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.health-indicator.healthy {
+    background: var(--green);
+    box-shadow: 0 0 10px rgba(42, 157, 143, 0.6);
+}
+
+.health-indicator.warning {
+    background: var(--orange);
+    box-shadow: 0 0 10px rgba(255, 140, 66, 0.6);
+}
+
+.health-indicator.critical {
+    background: var(--red);
+    box-shadow: 0 0 10px rgba(230, 57, 70, 0.6);
+}
+
+#healthText {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.health-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Analytics Section */
+.admin-analytics {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+}
+
+.admin-analytics h2 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.analytics-chart-container {
+    width: 100%;
+    height: 300px;
+    background: rgba(26, 13, 46, 0.5);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow: hidden;
+}
+
+#playsChart {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .admin-stats {

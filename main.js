@@ -46,8 +46,13 @@ function initIntroScreen() {
     const arcadeClickable = document.getElementById('arcadeClickable');
     const mainGame = document.getElementById('mainGame');
     
+    // Initialize intro screen music
+    initIntroScreenMusic();
+    
     if (arcadeClickable && introScreen && mainGame) {
         arcadeClickable.addEventListener('click', function() {
+            // Stop intro music
+            stopIntroScreenMusic();
             // Hide intro screen
             introScreen.classList.add('hidden');
             // Show main game
@@ -61,6 +66,67 @@ function initIntroScreen() {
             mainGame.style.display = 'block';
         }
         init();
+    }
+}
+
+// Initialize intro screen background music
+function initIntroScreenMusic() {
+    const introMusic = document.getElementById('introBackgroundMusic');
+    const muteBtn = document.getElementById('introMuteToggleBtn');
+    const muteIcon = document.getElementById('introMuteIcon');
+    
+    if (!introMusic || !muteBtn || !muteIcon) return;
+    
+    // Set volume
+    introMusic.volume = gameState.volume;
+    introMusic.loop = true;
+    introMusic.preload = 'auto';
+    
+    // Check if music was previously muted
+    const isMuted = localStorage.getItem('introMusicMuted') === 'true';
+    
+    // Setup mute toggle button
+    muteBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (introMusic.paused || isMuted) {
+            // Unmute
+            introMusic.play().catch((error) => {
+                console.error('Error playing intro music:', error);
+            });
+            localStorage.setItem('introMusicMuted', 'false');
+            muteBtn.classList.remove('muted');
+            muteIcon.textContent = '🔊';
+        } else {
+            // Mute
+            introMusic.pause();
+            localStorage.setItem('introMusicMuted', 'true');
+            muteBtn.classList.add('muted');
+            muteIcon.textContent = '🔇';
+        }
+    });
+    
+    // Start playing if not muted
+    if (!isMuted) {
+        introMusic.play().catch((error) => {
+            console.error('Error playing intro music:', error);
+            // If autoplay fails, show muted state
+            muteBtn.classList.add('muted');
+            muteIcon.textContent = '🔇';
+        });
+    } else {
+        muteBtn.classList.add('muted');
+        muteIcon.textContent = '🔇';
+    }
+}
+
+// Stop intro screen music
+function stopIntroScreenMusic() {
+    const introMusic = document.getElementById('introBackgroundMusic');
+    if (introMusic) {
+        introMusic.pause();
+        introMusic.currentTime = 0;
     }
 }
 
@@ -412,6 +478,7 @@ function switchMode(mode) {
 // Select color
 function selectColor(color) {
     if (gameState.isRolling) return;
+    if (document.getElementById('mainGame')?.classList.contains('betting-locked')) return;
 
     // Specifically target the button, not the span inside
     const btn = document.querySelector(`.color-btn[data-color="${color}"]`);
@@ -437,6 +504,10 @@ function selectColor(color) {
 // Place bet
 async function placeBet() {
     if (gameState.isRolling) return;
+    if (document.getElementById('mainGame')?.classList.contains('betting-locked')) {
+        alert('Betting is currently locked. Please wait for the next round.');
+        return;
+    }
     if (gameState.selectedColors.length === 0) {
         alert('Please select at least one color!');
         return;
@@ -516,6 +587,10 @@ function updateBetAmounts() {
 // Roll dice
 async function rollDice() {
     if (gameState.isRolling) return;
+    if (document.getElementById('mainGame')?.classList.contains('betting-locked')) {
+        alert('Betting is currently locked. Please wait for the next round.');
+        return;
+    }
     if (gameState.selectedColors.length === 0) {
         alert('Please place a bet first!');
         return;
@@ -1125,17 +1200,21 @@ function startTimeAttackTimer() {
         
         if (gameState.timeLeft <= 0) {
             stopTimer();
+            // Show betting lock notification
+            showBettingLockNotification();
+            
             // Skip rounds if no bet placed
             if (gameState.selectedColors.length === 0) {
                 gameState.skippedRounds += 2;
-                alert('Time\'s up! Skipping 2 rounds.');
             }
-            // Restart timer after a delay
+            
+            // Restart timer after 20-second lock period
             setTimeout(() => {
+                hideBettingLockNotification();
                 if (gameState.mode === 'timeattack') {
                     startTimeAttackTimer();
                 }
-            }, 2000);
+            }, 20000); // 20 seconds = two rounds
         }
     }, 1000);
 }
@@ -1151,6 +1230,61 @@ function stopTimer() {
         timerDisplay.style.opacity = '0';
         timerDisplay.style.visibility = 'hidden';
     }
+}
+
+// Show betting lock notification
+function showBettingLockNotification() {
+    const notification = document.getElementById('bettingLockNotification');
+    const countdownElement = document.getElementById('bettingLockCountdown');
+    const gameContainer = document.getElementById('mainGame');
+    
+    if (!notification || !countdownElement) return;
+    
+    // Add locked class to disable betting
+    if (gameContainer) {
+        gameContainer.classList.add('betting-locked');
+    }
+    
+    // Show notification
+    notification.classList.add('show');
+    
+    // Start 20-second countdown
+    let countdown = 20;
+    countdownElement.textContent = countdown;
+    
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        countdownElement.textContent = countdown;
+        
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+        }
+    }, 1000);
+    
+    // Store interval for cleanup
+    notification._countdownInterval = countdownInterval;
+}
+
+// Hide betting lock notification
+function hideBettingLockNotification() {
+    const notification = document.getElementById('bettingLockNotification');
+    const gameContainer = document.getElementById('mainGame');
+    
+    if (!notification) return;
+    
+    // Clear countdown interval
+    if (notification._countdownInterval) {
+        clearInterval(notification._countdownInterval);
+        notification._countdownInterval = null;
+    }
+    
+    // Remove locked class to re-enable betting
+    if (gameContainer) {
+        gameContainer.classList.remove('betting-locked');
+    }
+    
+    // Hide notification
+    notification.classList.remove('show');
 }
 
 // Show info modal

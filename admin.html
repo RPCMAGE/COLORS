@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="admin.css">
 </head>
-<body>
+<body class="admin-page">
     <!-- Password Protection Screen -->
     <div class="admin-login-screen" id="loginScreen">
         <div class="admin-login-container">
@@ -35,6 +35,32 @@
         </header>
 
         <div class="admin-content">
+            <!-- Game Health Summary -->
+            <div class="admin-health-summary">
+                <div class="admin-health-card">
+                    <h3>House Money Balance</h3>
+                    <div class="health-value" id="houseBalance">0.00 SOL</div>
+                    <p class="health-label">Total liquidity</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>Overall Health Mode</h3>
+                    <div class="health-status" id="healthStatus">
+                        <span class="health-indicator healthy" id="healthIndicator"></span>
+                        <span id="healthText">Healthy</span>
+                    </div>
+                    <p class="health-label">System status</p>
+                </div>
+            </div>
+
+            <!-- Analytics Graph -->
+            <div class="admin-analytics">
+                <h2>📊 Overall Plays Over Time</h2>
+                <div class="analytics-chart-container">
+                    <canvas id="playsChart" width="800" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Transactions Section -->
             <div class="admin-transactions">
                 <h2>Transaction History</h2>
                 <div class="admin-filters">
@@ -45,7 +71,7 @@
                         <option value="solana-normal">Solana - Normal</option>
                         <option value="solana-timeattack">Solana - Time Attack</option>
                     </select>
-                    <input type="text" id="searchInput" class="admin-search" placeholder="Search transactions...">
+                    <input type="text" id="searchInput" class="admin-search" placeholder="Search users or transactions...">
                 </div>
                 <div class="admin-table-container">
                     <table class="admin-table">

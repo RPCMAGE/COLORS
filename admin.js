@@ -61,6 +61,15 @@ function initAdmin() {
     refreshBtn.addEventListener('click', () => {
         loadTransactions();
     });
+    
+    // Initial load of health and analytics
+    loadTransactions();
+    
+    // Update chart on window resize
+    window.addEventListener('resize', () => {
+        const transactions = JSON.parse(localStorage.getItem('gameTransactions') || '[]');
+        updateAnalyticsChart(transactions);
+    });
 
     // Clear data button
     const clearBtn = document.getElementById('clearBtn');
@@ -95,7 +104,15 @@ function loadTransactions() {
         
         if (searchTerm) {
             filteredTransactions = filteredTransactions.filter(t => {
-                return JSON.stringify(t).toLowerCase().includes(searchTerm);
+                // Search in selected colors, dice results, and transaction data
+                const searchableText = [
+                    ...(t.selectedColors || []),
+                    ...(t.diceResults || []),
+                    t.mode,
+                    t.betSize?.toString(),
+                    t.payout?.toString()
+                ].join(' ').toLowerCase();
+                return searchableText.includes(searchTerm);
             });
         }
         
@@ -104,11 +121,163 @@ function loadTransactions() {
         
         // Display transactions
         displayTransactions(filteredTransactions);
+        
+        // Update health summary and analytics
+        updateHealthSummary(transactions);
+        updateAnalyticsChart(transactions);
     } catch (error) {
         console.error('Error loading transactions:', error);
         document.getElementById('transactionsTableBody').innerHTML = 
             '<tr><td colspan="6" class="admin-empty">Error loading transactions</td></tr>';
     }
+}
+
+// Update health summary
+function updateHealthSummary(transactions) {
+    // Calculate house balance (sum of all net winnings from house perspective)
+    // Net winnings are from player perspective, so house balance = -sum(netWinnings)
+    let houseBalance = 0;
+    transactions.forEach(t => {
+        // Net winnings positive = player won, house lost
+        // Net winnings negative = player lost, house won
+        houseBalance -= (t.netWinnings || 0);
+    });
+    
+    // Update house balance display
+    const houseBalanceEl = document.getElementById('houseBalance');
+    if (houseBalanceEl) {
+        if (Math.abs(houseBalance) >= 1) {
+            houseBalanceEl.textContent = houseBalance.toFixed(2) + ' SOL';
+        } else {
+            houseBalanceEl.textContent = houseBalance.toFixed(4) + ' SOL';
+        }
+    }
+    
+    // Calculate health status
+    const totalBets = transactions.reduce((sum, t) => sum + (t.betSize || 0), 0);
+    const totalPayouts = transactions.reduce((sum, t) => sum + (t.payout || 0), 0);
+    const profitMargin = totalBets > 0 ? ((totalBets - totalPayouts) / totalBets) * 100 : 0;
+    
+    const healthIndicator = document.getElementById('healthIndicator');
+    const healthText = document.getElementById('healthText');
+    
+    if (healthIndicator && healthText) {
+        if (profitMargin >= 3) {
+            healthIndicator.className = 'health-indicator healthy';
+            healthText.textContent = 'Healthy';
+            healthText.style.color = 'var(--green)';
+        } else if (profitMargin >= 0) {
+            healthIndicator.className = 'health-indicator warning';
+            healthText.textContent = 'Warning';
+            healthText.style.color = 'var(--orange)';
+        } else {
+            healthIndicator.className = 'health-indicator critical';
+            healthText.textContent = 'Critical';
+            healthText.style.color = 'var(--red)';
+        }
+    }
+}
+
+// Update analytics chart
+function updateAnalyticsChart(transactions) {
+    const canvas = document.getElementById('playsChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    // Set canvas size to match container
+    const container = canvas.parentElement;
+    if (container) {
+        canvas.width = container.clientWidth - 32; // Account for padding
+        canvas.height = 300;
+    }
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    if (transactions.length === 0) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.font = '16px Poppins';
+        ctx.textAlign = 'center';
+        ctx.fillText('No data available', canvas.width / 2, canvas.height / 2);
+        return;
+    }
+    
+    // Group transactions by hour/day
+    const now = new Date();
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        date.setHours(0, 0, 0, 0);
+        last7Days.push({
+            date: date,
+            count: 0
+        });
+    }
+    
+    transactions.forEach(t => {
+        const tDate = new Date(t.timestamp);
+        tDate.setHours(0, 0, 0, 0);
+        const dayIndex = last7Days.findIndex(d => d.date.getTime() === tDate.getTime());
+        if (dayIndex >= 0) {
+            last7Days[dayIndex].count++;
+        }
+    });
+    
+    // Draw chart
+    const padding = 40;
+    const chartWidth = canvas.width - padding * 2;
+    const chartHeight = canvas.height - padding * 2;
+    const maxCount = Math.max(...last7Days.map(d => d.count), 1);
+    
+    // Draw axes
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padding, padding);
+    ctx.lineTo(padding, canvas.height - padding);
+    ctx.lineTo(canvas.width - padding, canvas.height - padding);
+    ctx.stroke();
+    
+    // Draw bars
+    const barWidth = chartWidth / last7Days.length;
+    last7Days.forEach((day, index) => {
+        const barHeight = (day.count / maxCount) * chartHeight;
+        const x = padding + index * barWidth + barWidth * 0.1;
+        const y = canvas.height - padding - barHeight;
+        const width = barWidth * 0.8;
+        
+        // Gradient fill
+        const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
+        gradient.addColorStop(0, 'rgba(255, 94, 175, 0.8)');
+        gradient.addColorStop(1, 'rgba(157, 78, 221, 0.8)');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x, y, width, barHeight);
+        
+        // Draw count label
+        if (day.count > 0) {
+            ctx.fillStyle = '#fff';
+            ctx.font = '12px Poppins';
+            ctx.textAlign = 'center';
+            ctx.fillText(day.count.toString(), x + width / 2, y - 5);
+        }
+        
+        // Draw date label
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.font = '10px Poppins';
+        ctx.textAlign = 'center';
+        const dateLabel = day.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        ctx.fillText(dateLabel, x + width / 2, canvas.height - padding + 20);
+    });
+    
+    // Draw title
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.font = '14px Poppins';
+    ctx.textAlign = 'left';
+    ctx.fillText('Plays per Day (Last 7 Days)', padding, 25);
 }
 
 // Format amount (handles both points and SOL)

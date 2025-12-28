@@ -217,6 +217,11 @@
     <audio id="backgroundMusic" loop preload="auto">
         <source src="Assets/Audio/Ambient_background_music.wav" type="audio/wav">
     </audio>
+    
+    <!-- Intro Screen Background Music -->
+    <audio id="introBackgroundMusic" loop preload="auto">
+        <source src="Assets/Audio/Ambient_background_music.wav" type="audio/wav">
+    </audio>
 
     <!-- Header Bar -->
     <header class="header">
@@ -247,6 +252,10 @@
             <img src="Assets/Images/ColorsIllustrationAnimated.gif" alt="COLORS Arcade" class="intro-illustration">
             <div class="arcade-clickable-area" id="arcadeClickable"></div>
         </div>
+        <!-- Mute Toggle Button (Lower Right) -->
+        <button class="intro-mute-toggle-btn" id="introMuteToggleBtn" title="Toggle Music">
+            <span id="introMuteIcon">🔊</span>
+        </button>
     </div>
 
     <!-- Main Game Area -->
@@ -382,6 +391,18 @@
                 <div class="timer-fill" id="timerFill"></div>
             </div>
             <span class="timer-text" id="timerText">10</span>
+        </div>
+
+        <!-- Betting Lock Notification -->
+        <div class="betting-lock-notification" id="bettingLockNotification">
+            <div class="betting-lock-content">
+                <h2 class="betting-lock-title">⏱️ Round Ended</h2>
+                <p class="betting-lock-message">Betting is now locked. Please wait for the next round.</p>
+                <div class="betting-lock-countdown">
+                    <span class="betting-lock-countdown-label">Next round in:</span>
+                    <span class="betting-lock-countdown-value" id="bettingLockCountdown">20</span>
+                </div>
+            </div>
         </div>
     </main>
 
