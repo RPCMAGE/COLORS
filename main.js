@@ -573,34 +573,40 @@ async function rollDice() {
     // Play roll sound
     playRandomSound('roll');
 
-    // Animate dice
+    // Animate dice with color cycling
     const diceElements = document.querySelectorAll('.dice');
-    diceElements.forEach(die => {
+    
+    // Generate random results first (for fairness)
+    const randomValues = new Uint32Array(3);
+    crypto.getRandomValues(randomValues);
+    
+    gameState.diceResults = [
+        colors[randomValues[0] % colors.length],
+        colors[randomValues[1] % colors.length],
+        colors[randomValues[2] % colors.length]
+    ];
+    
+    // Store roll data for fairness display
+    gameState.lastRollData = {
+        diceResults: [...gameState.diceResults],
+        selectedColors: [...gameState.selectedColors],
+        betAmount: gameState.betAmount,
+        mode: gameState.mode,
+        randomValues: Array.from(randomValues)
+    };
+
+    // Start rolling animation with color cycling
+    diceElements.forEach((die, index) => {
         die.classList.add('rolling');
+        // Start with GIF, then cycle through colors to show selection process
+        // Delay color cycling slightly so GIF shows first
+        setTimeout(() => {
+            animateDiceColorCycle(die, gameState.diceResults[index], index);
+        }, 300 + (index * 100)); // Stagger the start for each die
     });
 
-    // Generate random results after animation
-    // Use crypto.getRandomValues for better randomness (fairness)
+    // Stop animation and show final results
     setTimeout(() => {
-        const randomValues = new Uint32Array(3);
-        crypto.getRandomValues(randomValues);
-        
-        gameState.diceResults = [
-            colors[randomValues[0] % colors.length],
-            colors[randomValues[1] % colors.length],
-            colors[randomValues[2] % colors.length]
-        ];
-        
-        // Store roll data for fairness display
-        gameState.lastRollData = {
-            diceResults: [...gameState.diceResults],
-            selectedColors: [...gameState.selectedColors],
-            betAmount: gameState.betAmount,
-            mode: gameState.mode,
-            randomValues: Array.from(randomValues)
-        };
-
-        // Stop animation and show results
         diceElements.forEach((die, index) => {
             showDiceResult(die, gameState.diceResults[index]);
         });
@@ -617,16 +623,51 @@ async function rollDice() {
                     startTimeAttackTimer();
                 }, 1000);
             }
-        }, 500);
+        }, 300);
     }, 1500);
+}
+
+// Animate dice color cycling during roll
+function animateDiceColorCycle(dieElement, finalColor, index) {
+    let cycleCount = 0;
+    const maxCycles = 6 + index; // Each die cycles a different number of times (6-8 cycles)
+    const cycleInterval = 120; // Milliseconds per color change (faster for smoother feel)
+    
+    const cycleIntervalId = setInterval(() => {
+        if (cycleCount >= maxCycles) {
+            clearInterval(cycleIntervalId);
+            dieElement._colorCycleInterval = null;
+            // Ensure final color is set
+            dieElement.setAttribute('data-color', finalColor);
+            return;
+        }
+        
+        // Cycle through all colors, ending on the final color
+        const currentColorIndex = cycleCount % colors.length;
+        const colorToShow = cycleCount === maxCycles - 1 ? finalColor : colors[currentColorIndex];
+        
+        // Set color for preview (this will override the rolling GIF due to CSS specificity)
+        dieElement.setAttribute('data-color', colorToShow);
+        
+        cycleCount++;
+    }, cycleInterval);
+    
+    // Store interval ID on element for cleanup if needed
+    dieElement._colorCycleInterval = cycleIntervalId;
 }
 
 // Show dice result
 function showDiceResult(dieElement, color) {
+    // Clear any color cycling animation
+    if (dieElement._colorCycleInterval) {
+        clearInterval(dieElement._colorCycleInterval);
+        dieElement._colorCycleInterval = null;
+    }
+    
     // Remove rolling class to stop GIF animation
     dieElement.classList.remove('rolling');
     
-    // Set the color attribute - CSS will handle showing the correct color from Colors.png sprite
+    // Set the final color attribute - CSS will handle showing the correct color
     dieElement.setAttribute('data-color', color);
     
     // Remove any inline styles to let CSS handle the background
@@ -975,6 +1016,12 @@ function createConfettiParticle() {
 function resetDice() {
     const diceElements = document.querySelectorAll('.dice');
     diceElements.forEach(die => {
+        // Clear any color cycling animation
+        if (die._colorCycleInterval) {
+            clearInterval(die._colorCycleInterval);
+            die._colorCycleInterval = null;
+        }
+        
         // Remove color attribute to show default Dice.png
         die.removeAttribute('data-color');
         // Remove rolling class if present
