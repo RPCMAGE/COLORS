@@ -130,21 +130,36 @@ function stopIntroScreenMusic() {
     }
 }
 
+// Return to intro screen
+function returnToIntroScreen() {
+    const introScreen = document.getElementById('introScreen');
+    const mainGame = document.getElementById('mainGame');
+    
+    if (introScreen && mainGame) {
+        // Hide main game
+        mainGame.style.display = 'none';
+        // Show intro screen
+        introScreen.classList.remove('hidden');
+        // Restart intro music
+        initIntroScreenMusic();
+    }
+}
+
 // Initialize game
 function init() {
     try {
-        setupEventListeners();
+    setupEventListeners();
         setupGameModeSelector();
-        updateBalance();
-        updateBetAmounts();
+    updateBalance();
+    updateBetAmounts();
         
-        // Disable roll button initially
+    // Disable roll button initially
         const rollBtn = document.getElementById('rollBtn');
         if (rollBtn) {
             rollBtn.disabled = true;
         }
         
-        initBackgroundMusic();
+    initBackgroundMusic();
         setupMusicToggle();
         
         // Update dice size on load and resize
@@ -377,8 +392,8 @@ function setupEventListeners() {
         betAmountInput.addEventListener('input', function(e) {
             const value = parseFloat(e.target.value) || 0;
             gameState.betAmount = value;
-            updateBetAmounts();
-        });
+        updateBetAmounts();
+    });
     }
 
     const placeBetBtn = document.getElementById('placeBetBtn');
@@ -544,9 +559,9 @@ async function placeBet() {
         }
     } else {
         // Demo mode: check balance
-        if (totalBet > gameState.balance) {
-            alert('Insufficient balance for all selected colors!');
-            return;
+    if (totalBet > gameState.balance) {
+        alert('Insufficient balance for all selected colors!');
+        return;
         }
     }
 
@@ -631,14 +646,14 @@ async function rollDice() {
         }
     } else {
         // Demo mode: check balance and deduct
-        if (totalBet > gameState.balance) {
-            alert('Insufficient balance!');
-            return;
-        }
+    if (totalBet > gameState.balance) {
+        alert('Insufficient balance!');
+        return;
+    }
 
-        // Deduct bet from balance
-        gameState.balance -= totalBet;
-        updateBalance();
+    // Deduct bet from balance
+    gameState.balance -= totalBet;
+    updateBalance();
     }
 
     gameState.isRolling = true;
@@ -655,7 +670,7 @@ async function rollDice() {
     const randomValues = new Uint32Array(3);
     crypto.getRandomValues(randomValues);
     
-    gameState.diceResults = [
+        gameState.diceResults = [
         colors[randomValues[0] % colors.length],
         colors[randomValues[1] % colors.length],
         colors[randomValues[2] % colors.length]
@@ -671,7 +686,7 @@ async function rollDice() {
     };
 
     // Start rolling animation with color cycling
-    diceElements.forEach((die, index) => {
+        diceElements.forEach((die, index) => {
         die.classList.add('rolling');
         // Start with GIF, then cycle through colors to show selection process
         // Delay color cycling slightly so GIF shows first
@@ -1426,6 +1441,19 @@ function hideFairnessModal() {
     }
 }
 
+// Setup logo click to return to intro screen
+function setupLogoClick() {
+    const logo = document.querySelector('.logo');
+    if (logo) {
+        logo.addEventListener('click', function() {
+            returnToIntroScreen();
+        });
+    }
+}
+
 // Initialize on load
-document.addEventListener('DOMContentLoaded', initIntroScreen);
+document.addEventListener('DOMContentLoaded', function() {
+    initIntroScreen();
+    setupLogoClick();
+});
 

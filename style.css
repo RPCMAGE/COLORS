@@ -297,6 +297,8 @@ h1, h2, h3, h4, h5, h6 {
     display: block;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
     image-rendering: crisp-edges;
 }
 
