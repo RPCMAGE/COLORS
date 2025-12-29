@@ -169,7 +169,7 @@ body.admin-page::after {
     flex-direction: column;
     min-height: 0;
     gap: 2rem;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 /* Game Health Summary */
@@ -392,6 +392,7 @@ body.admin-page::after {
     background: rgba(26, 13, 46, 0.5);
     flex: 1;
     min-height: 0;
+    max-height: calc(100vh - 600px);
 }
 
 .admin-table {
@@ -643,6 +644,10 @@ body.admin-page::after {
 
     .admin-table th {
         font-size: 0.7rem;
+    }
+
+    .admin-table-container {
+        max-height: calc(100vh - 500px);
     }
 }
 
