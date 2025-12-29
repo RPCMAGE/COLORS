@@ -448,21 +448,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dice.rolling {
-    background-image: url('Assets/Images/Dice rotation.gif') !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    width: clamp(180px, 22vw, 280px) !important;
-    height: clamp(180px, 22vw, 280px) !important;
-    min-width: clamp(180px, 22vw, 280px) !important;
-    min-height: clamp(180px, 22vw, 280px) !important;
-    max-width: clamp(180px, 22vw, 280px) !important;
-    max-height: clamp(180px, 22vw, 280px) !important;
-    position: relative !important;
-    flex-shrink: 0 !important;
-    box-sizing: border-box !important;
-    transform: none !important;
-    scale: 1 !important;
+    background-image: url('Assets/Images/Dice rotation.gif');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .dice-face {
@@ -478,79 +467,50 @@ h1, h2, h3, h4, h5, h6 {
     background-position: center;
 }
 
+.dice[data-color="yellow"],
 .dice.rolling[data-color="yellow"] {
     background-image: url('Assets/Images/Yellow.png');
-    background-size: 100% 100% !important;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.dice[data-color="orange"] {
-    background-image: url('Assets/Images/Orange.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
 }
 
+.dice[data-color="orange"],
 .dice.rolling[data-color="orange"] {
     background-image: url('Assets/Images/Orange.png');
-    background-size: 100% 100% !important;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.dice[data-color="pink"] {
-    background-image: url('Assets/Images/Pink.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
 }
 
+.dice[data-color="pink"],
 .dice.rolling[data-color="pink"] {
     background-image: url('Assets/Images/Pink.png');
-    background-size: 100% 100% !important;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.dice[data-color="blue"] {
-    background-image: url('Assets/Images/Blue.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
 }
 
+.dice[data-color="blue"],
 .dice.rolling[data-color="blue"] {
     background-image: url('Assets/Images/Blue.png');
-    background-size: 100% 100% !important;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.dice[data-color="green"] {
-    background-image: url('Assets/Images/Green.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
 }
 
+.dice[data-color="green"],
 .dice.rolling[data-color="green"] {
     background-image: url('Assets/Images/Green.png');
-    background-size: 100% 100% !important;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.dice[data-color="red"] {
-    background-image: url('Assets/Images/Red.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
 }
 
+.dice[data-color="red"],
 .dice.rolling[data-color="red"] {
     background-image: url('Assets/Images/Red.png');
-    background-size: 100% 100% !important;
+    background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
 }
