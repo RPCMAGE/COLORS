@@ -41,7 +41,7 @@ body::after {
     left: 0;
     width: 100%;
     height: calc(100vh - 120px);
-    background-image: url('Assets/Images/Colors Screen 19x6 2.0.png');
+    background-image: url('Assets/Images/Colors Screen.png');
     background-size: 100% 100%;
     background-position: center top;
     background-repeat: no-repeat;
