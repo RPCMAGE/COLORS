@@ -448,15 +448,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dice.rolling {
-    background-image: url('Assets/Images/Dice rotation.gif');
-    background-size: 100% 100% !important;
-    background-repeat: no-repeat;
-    background-position: center;
+    background-image: url('Assets/Images/Dice rotation.gif') !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
     width: clamp(180px, 22vw, 280px) !important;
     height: clamp(180px, 22vw, 280px) !important;
-    position: relative;
-    flex-shrink: 0;
-    box-sizing: border-box;
+    min-width: clamp(180px, 22vw, 280px) !important;
+    min-height: clamp(180px, 22vw, 280px) !important;
+    max-width: clamp(180px, 22vw, 280px) !important;
+    max-height: clamp(180px, 22vw, 280px) !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+    transform: none !important;
+    scale: 1 !important;
 }
 
 .dice-face {
