@@ -49,6 +49,12 @@ function initIntroScreen() {
     // Initialize intro screen music
     initIntroScreenMusic();
     
+    // Initialize access code system
+    if (window.accessCodeSystem) {
+        window.accessCodeSystem.init();
+        window.accessCodeSystem.checkUrl(); // Check for referral code in URL
+    }
+    
     if (arcadeLogoClickable && introScreen && mainGame) {
         arcadeLogoClickable.addEventListener('click', function() {
             // Stop intro music
@@ -57,8 +63,14 @@ function initIntroScreen() {
             introScreen.classList.add('hidden');
             // Show main game
             mainGame.style.display = 'block';
-            // Initialize game after showing
-            init();
+            
+            // Check if access code is required
+            if (window.accessCodeSystem && window.accessCodeSystem.isRequired()) {
+                showAccessCodeOverlay();
+            } else {
+                // Initialize game immediately if no access code required
+                init();
+            }
         });
     } else {
         // If intro screen elements don't exist, just initialize the game
@@ -66,6 +78,69 @@ function initIntroScreen() {
             mainGame.style.display = 'block';
         }
         init();
+    }
+}
+
+// Show access code overlay
+function showAccessCodeOverlay() {
+    const overlay = document.getElementById('accessCodeOverlay');
+    const mainGame = document.getElementById('mainGame');
+    const input = document.getElementById('accessCodeInput');
+    const submitBtn = document.getElementById('accessCodeSubmitBtn');
+    const errorMsg = document.getElementById('accessCodeError');
+    
+    if (!overlay || !mainGame) return;
+    
+    // Blur the game
+    mainGame.classList.add('access-locked');
+    
+    // Show overlay
+    overlay.style.display = 'flex';
+    
+    // Focus input
+    if (input) {
+        input.focus();
+    }
+    
+    // Clear error
+    if (errorMsg) {
+        errorMsg.textContent = '';
+    }
+    
+    // Handle submit
+    const handleSubmit = () => {
+        const code = input ? input.value : '';
+        if (!code) {
+            if (errorMsg) errorMsg.textContent = 'Please enter an access code';
+            return;
+        }
+        
+        if (window.accessCodeSystem) {
+            const result = window.accessCodeSystem.validate(code);
+            if (result.valid) {
+                // Hide overlay and unblur game
+                overlay.style.display = 'none';
+                mainGame.classList.remove('access-locked');
+                // Initialize game
+                init();
+            } else {
+                if (errorMsg) errorMsg.textContent = result.message;
+            }
+        }
+    };
+    
+    // Submit button click
+    if (submitBtn) {
+        submitBtn.onclick = handleSubmit;
+    }
+    
+    // Enter key on input
+    if (input) {
+        input.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+                handleSubmit();
+            }
+        };
     }
 }
 
@@ -867,6 +942,14 @@ function calculateResults() {
     const totalBet = betAmount * selectedColors.length;
     const netWinnings = totalWin - totalBet;
     
+    // Award referral earnings (from house edge)
+    if (window.accessCodeSystem && totalBet > 0) {
+        const referralEarnings = window.accessCodeSystem.awardEarnings(totalBet);
+        if (referralEarnings > 0) {
+            console.log('Referral earnings awarded:', referralEarnings);
+        }
+    }
+
     // Solana mode: process payout
     if (gameState.gameMode === 'solana' && totalWin > 0) {
         (async () => {
@@ -903,11 +986,22 @@ function calculateResults() {
         };
     }
     
+    // Apply referral multiplier if user has one
+    let multiplier = 1.0;
+    if (window.accessCodeSystem) {
+        multiplier = window.accessCodeSystem.getMultiplier();
+    }
+    
+    // Apply multiplier to winnings (not the bet return)
+    const multiplierBonus = (totalWin - totalBet) * (multiplier - 1.0);
+    const adjustedTotalWin = totalWin + multiplierBonus;
+    const adjustedNetWinnings = netWinnings + multiplierBonus;
+    
     // Update balance atomically
     if (totalWin > 0) {
         if (gameState.gameMode === 'demo') {
-            // Demo mode: update local balance
-            gameState.balance += totalWin; // Add back full return (bet + winnings)
+            // Demo mode: update local balance with multiplier applied
+            gameState.balance += adjustedTotalWin; // Add back full return (bet + winnings + multiplier bonus)
         } else {
             // Solana mode: balance is managed by wallet
             // Just refresh from wallet (async, but don't block)
@@ -917,7 +1011,7 @@ function calculateResults() {
         }
         playRandomSound('win');
         showConfetti();
-        showResult(true, netWinnings, colorsMatched, maxDiceMatches, jackpotEligible);
+        showResult(true, adjustedNetWinnings, colorsMatched, maxDiceMatches, jackpotEligible);
         
         // Update leaderboard if user has a username (disconnected integration)
         if (window.leaderboardModule && typeof window.leaderboardModule.updateWinnings === 'function') {
@@ -989,6 +1083,18 @@ function showResult(won, winAmount, colorsMatched, maxDiceMatches, jackpot) {
             resultFairnessBtn.style.display = 'block';
         } else {
             resultFairnessBtn.style.display = 'none';
+        }
+    }
+
+    // Show/hide Twitter share button (only on wins with positive net winnings)
+    const twitterShareBtn = document.getElementById('resultTwitterShareBtn');
+    if (twitterShareBtn) {
+        if (won && winAmount > 0) {
+            twitterShareBtn.style.display = 'block';
+            // Set up Twitter share
+            setupTwitterShare(winAmount);
+        } else {
+            twitterShareBtn.style.display = 'none';
         }
     }
 
@@ -1449,6 +1555,45 @@ function setupLogoClick() {
             returnToIntroScreen();
         });
     }
+}
+
+// Setup Twitter share button
+function setupTwitterShare(winAmount) {
+    const twitterShareBtn = document.getElementById('resultTwitterShareBtn');
+    if (!twitterShareBtn) return;
+    
+    // Get user's referral code
+    let referralCode = '';
+    let referralLink = '';
+    if (window.accessCodeSystem) {
+        referralCode = window.accessCodeSystem.getUserCode();
+        referralLink = window.accessCodeSystem.getUserLink();
+    }
+    
+    // Format win amount
+    const winAmountFormatted = winAmount.toFixed(2);
+    const currency = gameState.gameMode === 'solana' ? 'SOL' : 'points';
+    
+    // Create tweet text
+    let tweetText = `I just won ${winAmountFormatted} ${currency} on $COLORS! 🎲`;
+    if (referralCode && referralLink) {
+        tweetText += ` Check it out and play the beta using my exclusive invite code: ${referralCode} > Play here: ${referralLink}`;
+    } else {
+        const baseUrl = window.location.origin + window.location.pathname;
+        tweetText += ` Check it out: ${baseUrl}`;
+    }
+    
+    // Create Twitter intent URL
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+    
+    // Remove old listeners
+    const newBtn = twitterShareBtn.cloneNode(true);
+    twitterShareBtn.parentNode.replaceChild(newBtn, twitterShareBtn);
+    
+    // Add click listener
+    newBtn.addEventListener('click', function() {
+        window.open(twitterUrl, '_blank', 'width=550,height=420');
+    });
 }
 
 // Initialize on load

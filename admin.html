@@ -60,6 +60,43 @@
                 </div>
             </div>
 
+            <!-- Access Code Management Section -->
+            <div class="admin-access-codes">
+                <h2>🔐 Access Code Management</h2>
+                <div class="admin-access-controls">
+                    <div class="admin-toggle-group">
+                        <label class="admin-toggle-label">
+                            <input type="checkbox" id="accessCodeToggle" class="admin-toggle">
+                            <span>Require Access Code</span>
+                        </label>
+                    </div>
+                    <button class="admin-generate-btn" id="generateCodeBtn">Generate New Code</button>
+                </div>
+                <div class="admin-code-list" id="codeList">
+                    <!-- Codes will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Referral System Management -->
+            <div class="admin-referral-system">
+                <h2>🎁 Referral System</h2>
+                <div class="admin-referral-controls">
+                    <div class="admin-referral-setting">
+                        <label>Global Multiplier:</label>
+                        <input type="number" id="globalMultiplier" step="0.1" min="1" value="1.2" class="admin-number-input">
+                        <button class="admin-save-btn" id="saveMultiplierBtn">Save</button>
+                    </div>
+                    <div class="admin-referral-setting">
+                        <label>Revenue Share % (of house edge):</label>
+                        <input type="number" id="revenueSharePercent" step="1" min="0" max="100" value="15" class="admin-number-input">
+                        <button class="admin-save-btn" id="saveRevenueShareBtn">Save</button>
+                    </div>
+                </div>
+                <div class="admin-referral-stats" id="referralStats">
+                    <!-- Stats will be populated by JavaScript -->
+                </div>
+            </div>
+
             <!-- Transactions Section -->
             <div class="admin-transactions">
                 <h2>Transaction History</h2>
@@ -96,6 +133,7 @@
         </div>
     </div>
 
+    <script src="access-code.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

@@ -332,6 +332,225 @@ body.admin-page::after {
     font-family: 'Orbitron', sans-serif;
 }
 
+/* Access Code Management */
+.admin-access-codes {
+    background: rgba(45, 27, 78, 0.8);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 2px solid var(--accent-secondary);
+    margin-bottom: 1rem;
+}
+
+.admin-access-codes h2 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.admin-access-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.admin-toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+}
+
+.admin-toggle {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.admin-generate-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-generate-btn:hover {
+    background: var(--accent-secondary);
+    transform: translateY(-2px);
+}
+
+.admin-code-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.admin-code-item {
+    background: rgba(26, 13, 46, 0.6);
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-code-item.expired {
+    opacity: 0.6;
+    border-color: var(--red);
+}
+
+.admin-code-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.admin-code-info strong {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+
+.admin-code-usage,
+.admin-code-expiration,
+.admin-code-created {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.admin-code-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-delete-btn {
+    padding: 0.5rem 1rem;
+    background: var(--red);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-delete-btn:hover {
+    background: #c1121f;
+    transform: translateY(-2px);
+}
+
+/* Referral System Management */
+.admin-referral-system {
+    background: rgba(45, 27, 78, 0.8);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 2px solid var(--accent-secondary);
+    margin-bottom: 1rem;
+}
+
+.admin-referral-system h2 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.admin-referral-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.admin-referral-setting {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.admin-referral-setting label {
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    font-weight: 600;
+    min-width: 200px;
+}
+
+.admin-number-input {
+    padding: 0.5rem 1rem;
+    background: rgba(26, 13, 46, 0.8);
+    border: 2px solid var(--accent-secondary);
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    width: 100px;
+}
+
+.admin-save-btn {
+    padding: 0.5rem 1.5rem;
+    background: var(--green);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-save-btn:hover {
+    background: #2a9d8f;
+    transform: translateY(-2px);
+}
+
+.admin-referral-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.admin-referral-stat-card {
+    background: rgba(26, 13, 46, 0.6);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.admin-referral-stat-card h3 {
+    font-family: 'Poppins', sans-serif;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.admin-referral-stat-card .stat-value {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+    font-size: 2rem;
+    font-weight: 700;
+}
+
 .admin-transactions {
     background: rgba(45, 27, 78, 0.8);
     padding: 2rem;

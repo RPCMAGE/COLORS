@@ -86,6 +86,189 @@ function initAdmin() {
     
     modeFilter.addEventListener('change', loadTransactions);
     searchInput.addEventListener('input', loadTransactions);
+
+    // Initialize access code system
+    if (window.accessCodeSystem) {
+        window.accessCodeSystem.init();
+        initAccessCodeManagement();
+        initReferralManagement();
+    }
+}
+
+// Initialize access code management
+function initAccessCodeManagement() {
+    const toggle = document.getElementById('accessCodeToggle');
+    const generateBtn = document.getElementById('generateCodeBtn');
+    
+    if (!toggle || !generateBtn) return;
+    
+    // Load current state
+    if (window.accessCodeSystem) {
+        toggle.checked = window.accessCodeSystem.isRequired();
+        loadAccessCodes();
+    }
+    
+    // Toggle handler
+    toggle.addEventListener('change', (e) => {
+        if (window.accessCodeSystem) {
+            window.accessCodeSystem.toggle(e.target.checked);
+            loadAccessCodes();
+        }
+    });
+    
+    // Generate code handler
+    generateBtn.addEventListener('click', () => {
+        const usageLimit = prompt('Enter usage limit (leave empty for unlimited, or enter a number):');
+        const expiration = prompt('Enter expiration date/time (YYYY-MM-DD HH:MM, or leave empty for no expiration):');
+        
+        let usageLimitNum = null;
+        if (usageLimit && usageLimit.trim() !== '') {
+            usageLimitNum = parseInt(usageLimit);
+            if (isNaN(usageLimitNum) || usageLimitNum < 1) {
+                alert('Invalid usage limit. Must be a positive number.');
+                return;
+            }
+        }
+        
+        let expirationDate = null;
+        if (expiration && expiration.trim() !== '') {
+            expirationDate = new Date(expiration);
+            if (isNaN(expirationDate.getTime())) {
+                alert('Invalid date format. Please use YYYY-MM-DD HH:MM format.');
+                return;
+            }
+            expirationDate = expirationDate.toISOString();
+        }
+        
+        if (window.accessCodeSystem) {
+            const code = window.accessCodeSystem.generate(usageLimitNum, expirationDate);
+            alert(`New access code generated: ${code}`);
+            loadAccessCodes();
+        }
+    });
+}
+
+// Load and display access codes
+function loadAccessCodes() {
+    const codeList = document.getElementById('codeList');
+    if (!codeList || !window.accessCodeSystem) return;
+    
+    const codes = window.accessCodeSystem.getAll();
+    
+    if (codes.length === 0) {
+        codeList.innerHTML = '<p class="admin-empty">No access codes found</p>';
+        return;
+    }
+    
+    codeList.innerHTML = codes.map(code => {
+        const usageText = code.usageLimit === null 
+            ? `Unlimited (${code.currentUsage} used)`
+            : `${code.currentUsage}/${code.usageLimit} used`;
+        
+        const expirationText = code.expiration 
+            ? new Date(code.expiration).toLocaleString()
+            : 'No expiration';
+        
+        const isExpired = code.expiration && new Date(code.expiration) < new Date();
+        
+        return `
+            <div class="admin-code-item ${isExpired ? 'expired' : ''}">
+                <div class="admin-code-info">
+                    <strong>${code.code}</strong>
+                    <span class="admin-code-usage">${usageText}</span>
+                    <span class="admin-code-expiration">Expires: ${expirationText}</span>
+                    <span class="admin-code-created">Created: ${new Date(code.createdAt).toLocaleString()}</span>
+                </div>
+                <div class="admin-code-actions">
+                    <button class="admin-delete-btn" onclick="deleteAccessCode('${code.code}')">Delete</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Delete access code
+function deleteAccessCode(code) {
+    if (!confirm(`Are you sure you want to delete access code "${code}"?`)) {
+        return;
+    }
+    
+    if (window.accessCodeSystem) {
+        window.accessCodeSystem.delete(code);
+        loadAccessCodes();
+    }
+}
+
+// Initialize referral management
+function initReferralManagement() {
+    const multiplierInput = document.getElementById('globalMultiplier');
+    const revenueShareInput = document.getElementById('revenueSharePercent');
+    const saveMultiplierBtn = document.getElementById('saveMultiplierBtn');
+    const saveRevenueShareBtn = document.getElementById('saveRevenueShareBtn');
+    
+    if (!window.accessCodeSystem) return;
+    
+    // Load current values
+    const referralData = window.accessCodeSystem.getAllReferrals();
+    if (multiplierInput) multiplierInput.value = referralData.globalMultiplier || 1.2;
+    if (revenueShareInput) revenueShareInput.value = referralData.revenueSharePercent || 15;
+    
+    // Save handlers
+    if (saveMultiplierBtn && multiplierInput) {
+        saveMultiplierBtn.addEventListener('click', () => {
+            const multiplier = parseFloat(multiplierInput.value);
+            if (isNaN(multiplier) || multiplier < 1) {
+                alert('Multiplier must be at least 1.0');
+                return;
+            }
+            window.accessCodeSystem.setGlobalMultiplier(multiplier);
+            alert('Global multiplier updated!');
+            loadReferralStats();
+        });
+    }
+    
+    if (saveRevenueShareBtn && revenueShareInput) {
+        saveRevenueShareBtn.addEventListener('click', () => {
+            const percent = parseInt(revenueShareInput.value);
+            if (isNaN(percent) || percent < 0 || percent > 100) {
+                alert('Revenue share must be between 0 and 100');
+                return;
+            }
+            window.accessCodeSystem.setRevenueSharePercent(percent);
+            alert('Revenue share percentage updated!');
+            loadReferralStats();
+        });
+    }
+    
+    loadReferralStats();
+}
+
+// Load referral statistics
+function loadReferralStats() {
+    const statsContainer = document.getElementById('referralStats');
+    if (!statsContainer || !window.accessCodeSystem) return;
+    
+    const referralData = window.accessCodeSystem.getAllReferrals();
+    const users = referralData.users || {};
+    
+    const totalUsers = Object.keys(users).length;
+    const totalEarnings = Object.values(users).reduce((sum, user) => sum + (user.totalEarnings || 0), 0);
+    const activeReferrers = Object.values(users).filter(user => user.referredBy !== null).length;
+    
+    statsContainer.innerHTML = `
+        <div class="admin-referral-stat-card">
+            <h3>Total Users</h3>
+            <p class="stat-value">${totalUsers}</p>
+        </div>
+        <div class="admin-referral-stat-card">
+            <h3>Active Referrers</h3>
+            <p class="stat-value">${activeReferrers}</p>
+        </div>
+        <div class="admin-referral-stat-card">
+            <h3>Total Referral Earnings</h3>
+            <p class="stat-value">${totalEarnings.toFixed(4)}</p>
+        </div>
+    `;
 }
 
 // Load and display transactions

@@ -260,6 +260,16 @@
         </button>
     </div>
 
+    <!-- Access Code Overlay -->
+    <div class="access-code-overlay" id="accessCodeOverlay" style="display: none;">
+        <div class="access-code-modal">
+            <h2 class="access-code-title">🔒 Enter Access Code to Unlock</h2>
+            <input type="text" id="accessCodeInput" class="access-code-input" placeholder="Enter access code" autocomplete="off">
+            <button class="access-code-submit-btn" id="accessCodeSubmitBtn">Unlock</button>
+            <p class="access-code-error" id="accessCodeError"></p>
+        </div>
+    </div>
+
     <!-- Main Game Area -->
     <main class="game-container" id="mainGame" style="display: none;">
         <!-- Confetti Overlay -->
@@ -332,6 +342,7 @@
                 <h3 id="resultTitle"></h3>
                 <p id="resultText"></p>
                 <button class="result-fairness-btn" id="resultFairnessBtn">View Fairness</button>
+                <button class="result-twitter-share-btn" id="resultTwitterShareBtn" style="display: none;">🐦 Share Win on X</button>
                 <button class="result-ok-btn" id="resultOkBtn">OK</button>
             </div>
         </div>
@@ -475,6 +486,7 @@
     <script src="solana-betting.js"></script>
     <script src="chat.js"></script>
     <script src="leaderboard.js"></script>
+    <script src="access-code.js"></script>
     <script src="main.js"></script>
     <script>
         // Initialize Solana Web3.js global
