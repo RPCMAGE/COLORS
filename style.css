@@ -101,62 +101,31 @@ body::after {
     top: 2rem;
     left: 50%;
     transform: translateX(-50%);
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: clamp(0.875rem, 1.5vw, 1.125rem);
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--accent);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 94, 175, 0.5);
     z-index: 1001;
     pointer-events: none;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
+    font-weight: 600;
 }
 
-/* Clickable Logo Area - positioned over the colors logo on top of arcade machine */
+/* Clickable Area - positioned over the arcade machine in the center */
 .arcade-logo-clickable-area {
     position: absolute;
-    /* Position over the logo at the top of the arcade machine */
-    top: 15%; /* Approximate position for logo at top of arcade machine */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20%; /* Width to cover the logo area */
-    height: 8%; /* Height to cover the logo area */
+    /* Position over the arcade machine - same as before */
+    top: 34%; /* Distance from top of screen - moved up */
+    left: 44.75%; /* Distance from left of screen - moved slightly to the right */
+    transform: translate(-50%, -50%);
+    width: 17.5%; /* Stretched to the right */
+    height: 12.5%; /* Reduced by 0.5% - bottom will be higher, top stays same */
     cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.3s ease;
     z-index: 10;
-    /* Subtle glow effect to indicate clickability */
-    box-shadow: 0 0 15px rgba(255, 94, 175, 0.4), 
-                0 0 30px rgba(255, 94, 175, 0.2);
-    border: 2px solid rgba(255, 94, 175, 0.3);
-    background: rgba(255, 94, 175, 0.1);
-    animation: pulseGlow 2s ease-in-out infinite;
-}
-
-@keyframes pulseGlow {
-    0%, 100% {
-        box-shadow: 0 0 15px rgba(255, 94, 175, 0.4), 
-                    0 0 30px rgba(255, 94, 175, 0.2);
-        border-color: rgba(255, 94, 175, 0.3);
-        background: rgba(255, 94, 175, 0.1);
-    }
-    50% {
-        box-shadow: 0 0 25px rgba(255, 94, 175, 0.6), 
-                    0 0 50px rgba(255, 94, 175, 0.4);
-        border-color: rgba(255, 94, 175, 0.5);
-        background: rgba(255, 94, 175, 0.2);
-    }
-}
-
-.arcade-logo-clickable-area:hover {
-    background: rgba(255, 94, 175, 0.3);
-    box-shadow: 0 0 30px rgba(255, 94, 175, 0.8), 
-                0 0 60px rgba(255, 94, 175, 0.5);
-    border: 2px solid rgba(255, 94, 175, 0.8);
-    animation: none; /* Stop pulsing on hover for stronger glow */
-}
-
-.arcade-logo-clickable-area:active {
-    transform: translateX(-50%) scale(0.95);
-    background: rgba(255, 94, 175, 0.4);
+    /* No visible highlight - completely invisible */
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 /* Intro Screen Mute Toggle Button */
