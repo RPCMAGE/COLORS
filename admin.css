@@ -127,8 +127,9 @@ body.admin-page::after {
 }
 
 .admin-panel {
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
     background: #2d1b4e; /* Clean solid purple background */
     color: #fff;
     padding: 2rem;
@@ -189,7 +190,7 @@ body.admin-page::after {
     flex-direction: column;
     min-height: 0;
     gap: 2rem;
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* Game Health Summary */
