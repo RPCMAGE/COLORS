@@ -1041,34 +1041,37 @@ h1, h2, h3, h4, h5, h6 {
 /* Footer */
 .footer {
     text-align: center;
-    padding: 2rem;
-    opacity: 1;
+    padding: 1rem 2rem;
     font-size: 0.9rem;
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
-    position: relative;
-    z-index: 10;
+    gap: 0.5rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
     width: 100%;
-    background: transparent;
+    background: rgba(26, 13, 46, 0.8);
+    backdrop-filter: blur(10px);
 }
 
 .footer-x-link {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
+    display: inline-block !important;
     color: #fff;
-    transition: all 0.3s ease;
     text-decoration: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
-    margin-top: 0.5rem;
+    font-size: 24px;
+    line-height: 1;
+    padding: 8px;
     opacity: 1 !important;
     visibility: visible !important;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.footer-x-link svg {
+    width: 24px;
+    height: 24px;
+    display: block;
 }
 
 .footer-x-link svg {
