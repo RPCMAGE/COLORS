@@ -120,15 +120,24 @@
 /* Admin Panel - Clean SaaS Design */
 body.admin-page {
     background: #2d1b4e !important; /* Clean solid purple background */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh !important;
 }
 
 body.admin-page::after {
     display: none !important; /* Remove pixelated monitor screen background */
 }
 
+html {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
 .admin-panel {
     min-height: 100vh;
-    overflow-y: auto;
+    overflow-y: visible;
     overflow-x: hidden;
     background: #2d1b4e; /* Clean solid purple background */
     color: #fff;
