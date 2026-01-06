@@ -943,8 +943,10 @@ function calculateResults() {
     const netWinnings = totalWin - totalBet;
     
     // Award referral earnings (from house edge)
+    // Use correct house edge based on game mode: 5% for normal, 3% for time attack
     if (window.accessCodeSystem && totalBet > 0) {
-        const referralEarnings = window.accessCodeSystem.awardEarnings(totalBet);
+        const houseEdgePercent = gameState.mode === 'timeattack' ? 3 : 5;
+        const referralEarnings = window.accessCodeSystem.awardEarnings(totalBet, houseEdgePercent);
         if (referralEarnings > 0) {
             console.log('Referral earnings awarded:', referralEarnings);
         }

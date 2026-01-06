@@ -456,6 +456,39 @@ body.admin-page::after {
     color: rgba(255, 255, 255, 0.7);
 }
 
+.admin-code-redemptions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-code-redemptions strong {
+    font-family: 'Poppins', sans-serif;
+    color: var(--accent-secondary);
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.admin-redemption-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-left: 0;
+}
+
+.admin-redemption-list li {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.admin-redemption-list li:last-child {
+    border-bottom: none;
+}
+
 .admin-code-actions {
     display: flex;
     gap: 0.5rem;

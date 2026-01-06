@@ -242,7 +242,7 @@ function calculateReferralEarnings(betAmount, houseEdgePercent = 5) {
 }
 
 // Award referral earnings
-function awardReferralEarnings(betAmount, userId = null) {
+function awardReferralEarnings(betAmount, houseEdgePercent = 5, userId = null) {
     if (!userId) userId = getUserId();
     const user = referralSystem.users[userId];
     
@@ -250,7 +250,7 @@ function awardReferralEarnings(betAmount, userId = null) {
         return 0; // No referrer, no earnings
     }
 
-    const earnings = calculateReferralEarnings(betAmount);
+    const earnings = calculateReferralEarnings(betAmount, houseEdgePercent);
     const referrer = referralSystem.users[user.referredBy];
     
     if (referrer) {

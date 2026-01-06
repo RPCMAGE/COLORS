@@ -171,6 +171,27 @@ function loadAccessCodes() {
         
         const isExpired = code.expiration && new Date(code.expiration) < new Date();
         
+        // Build redemption history
+        const redeemedBy = code.redeemedBy || [];
+        let redemptionHistory = '';
+        if (redeemedBy.length > 0) {
+            redemptionHistory = `
+                <div class="admin-code-redemptions">
+                    <strong>Redemptions (${redeemedBy.length}):</strong>
+                    <ul class="admin-redemption-list">
+                        ${redeemedBy.map(redemption => {
+                            const userId = redemption.userId || 'Unknown';
+                            const timestamp = redemption.timestamp ? new Date(redemption.timestamp).toLocaleString() : 'Unknown';
+                            const shortUserId = userId.length > 20 ? userId.substring(0, 20) + '...' : userId;
+                            return `<li>${shortUserId} - ${timestamp}</li>`;
+                        }).join('')}
+                    </ul>
+                </div>
+            `;
+        } else {
+            redemptionHistory = '<div class="admin-code-redemptions"><em>No redemptions yet</em></div>';
+        }
+        
         return `
             <div class="admin-code-item ${isExpired ? 'expired' : ''}">
                 <div class="admin-code-info">
@@ -178,6 +199,7 @@ function loadAccessCodes() {
                     <span class="admin-code-usage">${usageText}</span>
                     <span class="admin-code-expiration">Expires: ${expirationText}</span>
                     <span class="admin-code-created">Created: ${new Date(code.createdAt).toLocaleString()}</span>
+                    ${redemptionHistory}
                 </div>
                 <div class="admin-code-actions">
                     <button class="admin-delete-btn" onclick="deleteAccessCode('${code.code}')">Delete</button>
