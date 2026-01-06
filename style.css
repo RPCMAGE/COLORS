@@ -1054,20 +1054,27 @@ h1, h2, h3, h4, h5, h6 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.8);
     transition: all 0.3s ease;
     text-decoration: none;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    margin-top: 0.5rem;
+    opacity: 1 !important;
+}
+
+.footer-x-link svg {
+    width: 20px;
+    height: 20px;
 }
 
 .footer-x-link:hover {
     color: #000;
     background: rgba(255, 255, 255, 0.9);
-    transform: scale(1.1);
-    opacity: 1;
+    transform: scale(1.15);
+    opacity: 1 !important;
 }
 
 /* Info Button */
@@ -1582,7 +1589,11 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .footer {
-        display: none;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
     }
 
     .info-btn {
