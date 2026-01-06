@@ -43,14 +43,14 @@ const audioFiles = {
 // Initialize intro screen
 function initIntroScreen() {
     const introScreen = document.getElementById('introScreen');
-    const arcadeClickable = document.getElementById('arcadeClickable');
+    const arcadeLogoClickable = document.getElementById('arcadeLogoClickable');
     const mainGame = document.getElementById('mainGame');
     
     // Initialize intro screen music
     initIntroScreenMusic();
     
-    if (arcadeClickable && introScreen && mainGame) {
-        arcadeClickable.addEventListener('click', function() {
+    if (arcadeLogoClickable && introScreen && mainGame) {
+        arcadeLogoClickable.addEventListener('click', function() {
             // Stop intro music
             stopIntroScreenMusic();
             // Hide intro screen
