@@ -1338,16 +1338,16 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 0 15px rgba(42, 157, 143, 0.5);
 }
 
-/* Result Twitter Share Button */
+/* Result X Share Button */
 .result-twitter-share-btn {
     padding: 0.6rem 1.5rem;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
-    background: rgba(29, 161, 242, 0.2);
-    border: 2px solid #1da1f2;
+    background: rgba(0, 0, 0, 0.2);
+    border: 2px solid #000;
     border-radius: 10px;
-    color: #1da1f2;
+    color: #000;
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 0.5rem;
@@ -1357,10 +1357,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .result-twitter-share-btn:hover {
-    background: #1da1f2;
+    background: #000;
     color: #fff;
     transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(29, 161, 242, 0.5);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 /* Responsive Design */

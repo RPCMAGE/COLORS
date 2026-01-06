@@ -1559,7 +1559,7 @@ function setupLogoClick() {
     }
 }
 
-// Setup Twitter share button
+// Setup X (formerly Twitter) share button
 function setupTwitterShare(winAmount) {
     const twitterShareBtn = document.getElementById('resultTwitterShareBtn');
     if (!twitterShareBtn) return;
@@ -1576,17 +1576,17 @@ function setupTwitterShare(winAmount) {
     const winAmountFormatted = winAmount.toFixed(2);
     const currency = gameState.gameMode === 'solana' ? 'SOL' : 'points';
     
-    // Create tweet text
-    let tweetText = `I just won ${winAmountFormatted} ${currency} on $COLORS! 🎲`;
+    // Create post text
+    let postText = `I just won ${winAmountFormatted} ${currency} on $COLORS! 🎲`;
     if (referralCode && referralLink) {
-        tweetText += ` Check it out and play the beta using my exclusive invite code: ${referralCode} > Play here: ${referralLink}`;
+        postText += ` Check it out and play the beta using my exclusive invite code: ${referralCode} > Play here: ${referralLink}`;
     } else {
         const baseUrl = window.location.origin + window.location.pathname;
-        tweetText += ` Check it out: ${baseUrl}`;
+        postText += ` Check it out: ${baseUrl}`;
     }
     
-    // Create Twitter intent URL
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+    // Create X intent URL (still uses twitter.com domain for API)
+    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(postText)}`;
     
     // Remove old listeners
     const newBtn = twitterShareBtn.cloneNode(true);
@@ -1594,7 +1594,7 @@ function setupTwitterShare(winAmount) {
     
     // Add click listener
     newBtn.addEventListener('click', function() {
-        window.open(twitterUrl, '_blank', 'width=550,height=420');
+        window.open(xUrl, '_blank', 'width=550,height=420');
     });
 }
 
