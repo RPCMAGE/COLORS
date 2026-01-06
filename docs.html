@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COLORS - Technical Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #1a0d2e;
+            --bg-medium: #2d1b4e;
+            --accent: #ff5eaf;
+            --accent-secondary: #9d4edd;
+            --text: #fff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .docs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(45, 27, 78, 0.9);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 2px solid var(--accent);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-secondary);
+            font-size: 1.8rem;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-secondary);
+        }
+
+        h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-secondary);
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        code {
+            background: rgba(26, 13, 46, 0.8);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: var(--accent);
+            font-size: 0.9em;
+        }
+
+        .code-block {
+            background: rgba(26, 13, 46, 0.8);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: rgba(26, 13, 46, 0.6);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(255, 94, 175, 0.2);
+            color: var(--accent);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+        }
+
+        .highlight {
+            background: rgba(255, 94, 175, 0.2);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+        }
+
+        .warning {
+            background: rgba(230, 57, 70, 0.2);
+            border-left: 4px solid #e63946;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        .info {
+            background: rgba(42, 157, 143, 0.2);
+            border-left: 4px solid #2a9d8f;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="docs-container">
+        <h1>COLORS - Technical Documentation</h1>
+        <p class="docs-subtitle">Complete technical reference for the COLORS betting game platform</p>
+
+        <h2>1. Game Overview</h2>
+        <p>COLORS is a dice-based betting game where players bet on color outcomes. The game uses three six-sided dice, each displaying one of six colors: Yellow, Orange, Pink, Blue, Green, or Red.</p>
+
+        <h3>1.1 Core Mechanics</h3>
+        <ul>
+            <li><strong>Dice Roll:</strong> Three dice are rolled simultaneously, each landing on one of six colors</li>
+            <li><strong>Betting:</strong> Players select up to 3 colors before rolling</li>
+            <li><strong>Winning:</strong> A player wins if any of their selected colors match the dice results</li>
+            <li><strong>Payout:</strong> Winnings are calculated based on the number of matching dice and the game mode</li>
+        </ul>
+
+        <h3>1.2 Color Options</h3>
+        <p>The six available colors are:</p>
+        <ul>
+            <li>Yellow</li>
+            <li>Orange</li>
+            <li>Pink</li>
+            <li>Blue</li>
+            <li>Green</li>
+            <li>Red</li>
+        </ul>
+
+        <h2>2. Game Modes</h2>
+
+        <h3>2.1 Demo Mode</h3>
+        <p>Demo mode uses virtual points instead of real cryptocurrency. Players start with 1000 points and can bet any amount. This mode is for testing and demonstration purposes only.</p>
+        <ul>
+            <li>Starting balance: 1000 points</li>
+            <li>Minimum bet: 1 point</li>
+            <li>Bet increment: 10 points</li>
+            <li>No real money involved</li>
+        </ul>
+
+        <h3>2.2 Solana Mode</h3>
+        <p>Solana mode uses real SOL cryptocurrency for betting. Players must connect a Solana wallet (Phantom, Solflare, etc.) to participate.</p>
+        <ul>
+            <li>Requires Solana wallet connection</li>
+            <li>Minimum bet: 0.01 SOL</li>
+            <li>Bet increment: 0.01 SOL</li>
+            <li>Real cryptocurrency transactions</li>
+            <li>Payouts processed on-chain</li>
+        </ul>
+
+        <h3>2.3 Normal Mode</h3>
+        <p>Standard gameplay mode with a 5% house edge. Players can take their time to place bets with no time pressure.</p>
+        <ul>
+            <li>House edge: 5%</li>
+            <li>No time limit</li>
+            <li>Standard payout multipliers</li>
+        </ul>
+
+        <h3>2.4 Time Attack Mode</h3>
+        <p>Fast-paced mode with a 10-second timer per round. Higher payout multipliers but players must bet quickly.</p>
+        <ul>
+            <li>House edge: 3%</li>
+            <li>10-second betting window per round</li>
+            <li>Higher payout multipliers</li>
+            <li>If no bet is placed, player skips 2 rounds</li>
+            <li>Betting locks when timer expires</li>
+        </ul>
+
+        <h2>3. Payout System</h2>
+
+        <h3>3.1 Payout Calculation</h3>
+        <p>Payouts are calculated additively based on the number of matching dice for each selected color.</p>
+
+        <h4>Normal Mode Payouts (5% house edge):</h4>
+        <table>
+            <tr>
+                <th>Matches</th>
+                <th>Payout Formula</th>
+                <th>Example (100 bet)</th>
+            </tr>
+            <tr>
+                <td>1 die matches</td>
+                <td>Bet + (Bet × 1.04)</td>
+                <td>100 + 104 = 204 total return</td>
+            </tr>
+            <tr>
+                <td>2 dice match</td>
+                <td>Bet + (Bet × 1.04 × 2)</td>
+                <td>100 + 208 = 308 total return</td>
+            </tr>
+            <tr>
+                <td>3 dice match (Jackpot)</td>
+                <td>Bet + (Bet × 4.5)</td>
+                <td>100 + 450 = 550 total return</td>
+            </tr>
+        </table>
+
+        <h4>Time Attack Mode Payouts (3% house edge):</h4>
+        <table>
+            <tr>
+                <th>Matches</th>
+                <th>Payout Formula</th>
+                <th>Example (100 bet)</th>
+            </tr>
+            <tr>
+                <td>1 die matches</td>
+                <td>Bet + (Bet × 1.08)</td>
+                <td>100 + 108 = 208 total return</td>
+            </tr>
+            <tr>
+                <td>2 dice match</td>
+                <td>Bet + (Bet × 1.08 × 2)</td>
+                <td>100 + 216 = 316 total return</td>
+            </tr>
+            <tr>
+                <td>3 dice match (Jackpot)</td>
+                <td>Bet + (Bet × 5.0)</td>
+                <td>100 + 500 = 600 total return</td>
+            </tr>
+        </table>
+
+        <h3>3.2 Multiple Color Betting</h3>
+        <p>When betting on multiple colors:</p>
+        <ul>
+            <li>Each color is treated as a separate bet</li>
+            <li>Total bet = Bet Amount × Number of Colors Selected</li>
+            <li>Winnings are calculated separately for each color</li>
+            <li>Net winnings = Total winnings - Total bet</li>
+        </ul>
+
+        <h3>3.3 House Edge</h3>
+        <p>The house edge is the mathematical advantage the platform has over players. It ensures long-term profitability:</p>
+        <ul>
+            <li><strong>Normal Mode:</strong> 5% house edge</li>
+            <li><strong>Time Attack Mode:</strong> 3% house edge (lower due to time pressure)</li>
+        </ul>
+        <p>The house edge is built into the payout multipliers. Over many rounds, the platform will statistically win 3-5% of all bets placed.</p>
+
+        <h2>4. Random Number Generation</h2>
+
+        <h3>4.1 Fairness System</h3>
+        <p>The game uses cryptographically secure random number generation to ensure fairness. Each dice roll is independently random and cannot be predicted or manipulated.</p>
+
+        <h3>4.2 Fairness Verification</h3>
+        <p>After each roll, players can view the "Fairness" details which show:</p>
+        <ul>
+            <li>Exact dice results</li>
+            <li>Selected colors</li>
+            <li>Bet amount</li>
+            <li>Calculation breakdown</li>
+            <li>Net winnings</li>
+        </ul>
+
+        <h2>5. Access Code System</h2>
+
+        <h3>5.1 Purpose</h3>
+        <p>The access code system creates an exclusive barrier for the beta phase, allowing controlled access during pitches and testing periods.</p>
+
+        <h3>5.2 Default Access Code</h3>
+        <p>The default access code is <code>colors2026</code>. This code is unlimited use and has no expiration.</p>
+
+        <h3>5.3 Access Flow</h3>
+        <ol>
+            <li>User clicks the "Colors" logo on the arcade machine</li>
+            <li>Game screen loads but is blurred (CSS backdrop-filter: blur)</li>
+            <li>Access code overlay appears</li>
+            <li>User enters access code</li>
+            <li>Code is validated</li>
+            <li>If valid, blur is removed and game initializes</li>
+            <li>If invalid, error message is displayed</li>
+        </ol>
+
+        <h3>5.4 Code Management (Admin)</h3>
+        <p>Administrators can:</p>
+        <ul>
+            <li><strong>Toggle requirement:</strong> Enable/disable access code requirement globally</li>
+            <li><strong>Generate codes:</strong> Create new unique alphanumeric codes</li>
+            <li><strong>Set usage limits:</strong> Single-use, custom limit, or unlimited</li>
+            <li><strong>Set expiration:</strong> Specific date/time or no expiration</li>
+            <li><strong>Track redemptions:</strong> See which codes were used, by whom, and when</li>
+            <li><strong>Delete codes:</strong> Remove codes from the system</li>
+        </ul>
+
+        <h3>5.5 Code Storage</h3>
+        <p>Access codes are stored in browser localStorage under the key <code>accessCodeSettings</code>. This includes:</p>
+        <ul>
+            <li>Master toggle state (enabled/disabled)</li>
+            <li>All generated codes</li>
+            <li>Usage counts</li>
+            <li>Expiration dates</li>
+            <li>Redemption history</li>
+        </ul>
+
+        <h2>6. Referral System</h2>
+
+        <h3>6.1 Overview</h3>
+        <p>The referral system incentivizes organic growth by rewarding users who refer new players.</p>
+
+        <h3>6.2 User Referral Codes</h3>
+        <p>Every user automatically receives a unique 10-character alphanumeric referral code. This code is generated on first use and stored permanently.</p>
+
+        <h3>6.3 Referral Links</h3>
+        <p>Each user's referral link format: <code>[BASE_URL]?ref=[REFERRAL_CODE]</code></p>
+        <p>When a new user visits with a referral code in the URL, the system:</p>
+        <ol>
+            <li>Validates the referral code</li>
+            <li>Prevents self-referral</li>
+            <li>Links the new user to the referrer</li>
+            <li>Applies multiplier benefits to the referrer</li>
+        </ol>
+
+        <h3>6.4 Multiplier Rewards</h3>
+        <p>When a user refers someone, the referrer receives a multiplier bonus on their winnings:</p>
+        <ul>
+            <li><strong>Default multiplier:</strong> 1.2x (20% bonus on net winnings)</li>
+            <li><strong>Configurable:</strong> Admin can adjust global multiplier</li>
+            <li><strong>Application:</strong> Multiplier applies to net winnings only, not the bet return</li>
+        </ul>
+        <p>Example: If a player wins 100 points net and has a 1.2x multiplier, they receive 120 points total (100 + 20 bonus).</p>
+
+        <h3>6.5 Revenue Share Model</h3>
+        <p>Referrers also earn a percentage of the house edge from their referrals' bets:</p>
+        <ul>
+            <li><strong>Default rate:</strong> 15% of house edge</li>
+            <li><strong>House edge:</strong> 5% in Normal mode, 3% in Time Attack mode</li>
+            <li><strong>Calculation:</strong> (Bet Amount × House Edge %) × Revenue Share %</li>
+        </ul>
+        <p>Example: If a referred player bets 100 points in Normal mode:</p>
+        <ul>
+            <li>House edge = 100 × 5% = 5 points</li>
+            <li>Referrer earns = 5 × 15% = 0.75 points</li>
+        </ul>
+        <div class="info">
+            <strong>Note:</strong> Revenue share is calculated from the house edge, not the total bet. This ensures the platform never pays out more than it earns.
+        </div>
+
+        <h3>6.6 Referral Tracking</h3>
+        <p>The system tracks:</p>
+        <ul>
+            <li>User referral codes</li>
+            <li>Who referred whom</li>
+            <li>Total referral earnings per user</li>
+            <li>Multiplier status</li>
+        </ul>
+
+        <h3>6.7 Admin Controls</h3>
+        <p>Administrators can adjust:</p>
+        <ul>
+            <li><strong>Global Multiplier:</strong> Default bonus multiplier for all referrers</li>
+            <li><strong>Revenue Share Percentage:</strong> Percentage of house edge given to referrers</li>
+        </ul>
+
+        <h2>7. Social Sharing</h2>
+
+        <h3>7.1 Twitter/X Share Button</h3>
+        <p>A Twitter share button appears only when a player wins (Net Winnings > 0).</p>
+
+        <h3>7.2 Share Content</h3>
+        <p>The tweet is pre-populated with:</p>
+        <ul>
+            <li>Win amount and currency (points or SOL)</li>
+            <li>Player's referral code</li>
+            <li>Player's referral link</li>
+        </ul>
+        <p>Template: <code>"I just won [Win Amount] [Currency] on $COLORS! 🎲 Check it out and play the beta using my exclusive invite code: [Referral_Code] > Play here: [Referral_Link]"</code></p>
+
+        <h3>7.3 Implementation</h3>
+        <p>Uses Twitter Intent API to open a new window with pre-filled tweet content. The button only appears on successful wins to maximize organic sharing.</p>
+
+        <h2>8. User Interface Features</h2>
+
+        <h3>8.1 Header Controls</h3>
+        <ul>
+            <li><strong>Game Mode Selector:</strong> Switch between Demo and Solana modes</li>
+            <li><strong>Logo:</strong> Clickable, returns to intro screen</li>
+            <li><strong>Wallet Status:</strong> Shows connected wallet address (Solana mode only)</li>
+            <li><strong>Info Button:</strong> Opens game rules and payout information</li>
+            <li><strong>Music Toggle:</strong> Play/stop background music</li>
+            <li><strong>Mode Toggle:</strong> Switch between Normal and Time Attack modes</li>
+        </ul>
+
+        <h3>8.2 Game Area</h3>
+        <ul>
+            <li><strong>Dice Display:</strong> Three dice showing current results or rolling animation</li>
+            <li><strong>Color Selection:</strong> Six color buttons, select up to 3</li>
+            <li><strong>Balance Display:</strong> Current balance (points or SOL)</li>
+            <li><strong>Bet Controls:</strong> Input field and Place Bet/Clear buttons</li>
+            <li><strong>Roll Button:</strong> Initiates dice roll (disabled when no bet placed)</li>
+        </ul>
+
+        <h3>8.3 Result Display</h3>
+        <ul>
+            <li><strong>Win/Loss Message:</strong> Shows match results and winnings</li>
+            <li><strong>Fairness Button:</strong> View detailed roll information</li>
+            <li><strong>Twitter Share Button:</strong> Appears only on wins</li>
+            <li><strong>OK Button:</strong> Dismisses result and resets for next round</li>
+        </ul>
+
+        <h3>8.4 Timer Display (Time Attack Mode)</h3>
+        <ul>
+            <li>10-second countdown bar</li>
+            <li>Visual countdown timer</li>
+            <li>Betting locks when timer reaches zero</li>
+            <li>20-second wait period before next round</li>
+        </ul>
+
+        <h2>9. Admin Panel</h2>
+
+        <h3>9.1 Access</h3>
+        <p>Admin panel is accessible at <code>/admin</code> with password: <code>6Guu889Kiuj]]@0</code></p>
+
+        <h3>9.2 Features</h3>
+
+        <h4>9.2.1 Game Health Summary</h4>
+        <ul>
+            <li><strong>House Money Balance:</strong> Total liquidity in the system</li>
+            <li><strong>Overall Health Mode:</strong> System status (Healthy/Warning/Critical)</li>
+        </ul>
+
+        <h4>9.2.2 Analytics Graph</h4>
+        <ul>
+            <li>Bar chart showing "Overall Plays Over Time"</li>
+            <li>Uses Chart.js library</li>
+            <li>Updates automatically when transactions are loaded</li>
+        </ul>
+
+        <h4>9.2.3 Transaction History</h4>
+        <ul>
+            <li>Displays all game transactions</li>
+            <li>Shows: Time, Bet Size, Payout, Mode, Net Winnings, Details</li>
+            <li>Filterable by game mode</li>
+            <li>Searchable by user or transaction data</li>
+            <li>Scrollable table for large datasets</li>
+        </ul>
+
+        <h4>9.2.4 Access Code Management</h4>
+        <ul>
+            <li>Master toggle to enable/disable access code requirement</li>
+            <li>Generate new codes with custom parameters</li>
+            <li>View all codes with usage statistics</li>
+            <li>Delete codes</li>
+        </ul>
+
+        <h4>9.2.5 Referral System Management</h4>
+        <ul>
+            <li>Adjust global multiplier percentage</li>
+            <li>Adjust revenue share percentage</li>
+            <li>View referral statistics (total users, active referrers, total earnings)</li>
+        </ul>
+
+        <h3>9.3 Data Storage</h3>
+        <p>All admin data is stored in browser localStorage:</p>
+        <ul>
+            <li><code>gameTransactions</code>: All game transaction history</li>
+            <li><code>accessCodeSettings</code>: Access code configuration and codes</li>
+            <li><code>referralSystem</code>: Referral system data and user information</li>
+        </ul>
+
+        <h2>10. Technical Implementation</h2>
+
+        <h3>10.1 Frontend Stack</h3>
+        <ul>
+            <li><strong>HTML5:</strong> Structure</li>
+            <li><strong>CSS3:</strong> Styling with custom properties and animations</li>
+            <li><strong>JavaScript (ES6+):</strong> Game logic and interactivity</li>
+            <li><strong>Solana Web3.js:</strong> Blockchain integration for Solana mode</li>
+            <li><strong>Chart.js:</strong> Analytics visualization</li>
+        </ul>
+
+        <h3>10.2 State Management</h3>
+        <p>Game state is managed in a central <code>gameState</code> object containing:</p>
+        <ul>
+            <li>Current balance</li>
+            <li>Selected colors</li>
+            <li>Bet amount</li>
+            <li>Dice results</li>
+            <li>Game mode (demo/solana)</li>
+            <li>Play mode (normal/timeattack)</li>
+            <li>Rolling state</li>
+            <li>Betting locked state</li>
+        </ul>
+
+        <h3>10.3 Data Persistence</h3>
+        <p>Data is stored in browser localStorage:</p>
+        <ul>
+            <li>Game transactions</li>
+            <li>Access code settings</li>
+            <li>Referral system data</li>
+            <li>Chat username</li>
+            <li>Music preferences</li>
+            <li>Demo user ID</li>
+        </ul>
+
+        <h3>10.4 Solana Integration</h3>
+        <p>For Solana mode:</p>
+        <ul>
+            <li>Uses Solana Web3.js library</li>
+            <li>Connects to Solana wallet extensions (Phantom, Solflare, etc.)</li>
+            <li>Processes bets and payouts on-chain</li>
+            <li>Updates balance from wallet</li>
+            <li>Requires wallet connection before betting</li>
+        </ul>
+
+        <h3>10.5 Random Number Generation</h3>
+        <p>Dice rolls use <code>crypto.getRandomValues()</code> for cryptographically secure randomness. Each dice roll is independent and unpredictable.</p>
+
+        <h2>11. File Structure</h2>
+
+        <h3>11.1 Core Files</h3>
+        <ul>
+            <li><code>index.html</code>: Main game interface</li>
+            <li><code>style.css</code>: Game styling</li>
+            <li><code>main.js</code>: Core game logic</li>
+            <li><code>admin.html</code>: Admin panel interface</li>
+            <li><code>admin.css</code>: Admin panel styling</li>
+            <li><code>admin.js</code>: Admin panel logic</li>
+            <li><code>access-code.js</code>: Access code and referral system</li>
+            <li><code>wallet.js</code>: Solana wallet management</li>
+            <li><code>solana-betting.js</code>: Solana betting logic</li>
+            <li><code>chat.js</code>: Chat functionality</li>
+            <li><code>leaderboard.js</code>: Leaderboard system</li>
+        </ul>
+
+        <h2>12. Limitations and Notes</h2>
+
+        <h3>12.1 Current Limitations</h3>
+        <ul>
+            <li>All data stored in browser localStorage (not persistent across devices)</li>
+            <li>No backend server (all logic runs client-side)</li>
+            <li>Access codes and referral data are local to each browser</li>
+            <li>Transaction history is limited to last 1000 entries</li>
+            <li>No user authentication system (uses wallet address or demo ID)</li>
+        </ul>
+
+        <h3>12.2 Future Considerations</h3>
+        <ul>
+            <li>Backend API for persistent data storage</li>
+            <li>Database for transactions and user data</li>
+            <li>Server-side access code validation</li>
+            <li>Cross-device referral tracking</li>
+            <li>User accounts and authentication</li>
+            <li>Real-time leaderboard updates</li>
+        </ul>
+
+        <h2>13. Security Considerations</h2>
+
+        <h3>13.1 Client-Side Limitations</h3>
+        <p>Since the game runs entirely client-side:</p>
+        <ul>
+            <li>All game logic can be inspected in browser DevTools</li>
+            <li>LocalStorage data can be modified</li>
+            <li>Access codes are stored in plain text</li>
+            <li>No server-side validation</li>
+        </ul>
+
+        <h3>13.2 Solana Mode Security</h3>
+        <p>For Solana mode:</p>
+        <ul>
+            <li>Wallet transactions are signed by user's wallet</li>
+            <li>On-chain transactions are immutable</li>
+            <li>Smart contract handles payouts (if implemented)</li>
+        </ul>
+
+        <div class="warning">
+            <strong>Important:</strong> The current implementation is for demonstration purposes. For production use, implement server-side validation, secure access code storage, and proper authentication.
+        </div>
+
+        <a href="admin.html" class="back-link">← Back to Admin Panel</a>
+    </div>
+</body>
+</html>
