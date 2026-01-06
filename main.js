@@ -1088,12 +1088,12 @@ function showResult(won, winAmount, colorsMatched, maxDiceMatches, jackpot) {
         }
     }
 
-    // Show/hide Twitter share button (only on wins with positive net winnings)
+    // Show/hide X share button (only on wins with positive net winnings)
     const twitterShareBtn = document.getElementById('resultTwitterShareBtn');
     if (twitterShareBtn) {
         if (won && winAmount > 0) {
             twitterShareBtn.style.display = 'block';
-            // Set up Twitter share
+            // Set up X share
             setupTwitterShare(winAmount);
         } else {
             twitterShareBtn.style.display = 'none';
