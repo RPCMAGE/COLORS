@@ -1,6 +1,49 @@
 // Admin Panel JavaScript
 const ADMIN_PASSWORD = '6Guu889Kiuj]]@0';
 
+// House wallet address (public key)
+const HOUSE_WALLET_ADDRESS = 'CLaREi6vTQPrPVBx2oJ7Lf3aLoZLeLnWTwPW9rv8NURy';
+
+// Solana connection (mainnet)
+let solanaConnection = null;
+let houseWalletPublicKey = null;
+
+// Initialize Solana connection
+function initSolanaConnection() {
+    try {
+        if (typeof solanaWeb3 !== 'undefined') {
+            solanaConnection = new solanaWeb3.Connection(
+                'https://api.mainnet-beta.solana.com',
+                'confirmed'
+            );
+            houseWalletPublicKey = new solanaWeb3.PublicKey(HOUSE_WALLET_ADDRESS);
+            console.log('Solana connection initialized');
+            return true;
+        } else {
+            console.warn('Solana Web3.js not loaded, using fallback calculations');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error initializing Solana connection:', error);
+        return false;
+    }
+}
+
+// Fetch real house wallet balance from blockchain
+async function fetchHouseWalletBalance() {
+    if (!solanaConnection || !houseWalletPublicKey) {
+        return null;
+    }
+    
+    try {
+        const balance = await solanaConnection.getBalance(houseWalletPublicKey);
+        return balance / 1e9; // Convert lamports to SOL
+    } catch (error) {
+        console.error('Error fetching house wallet balance:', error);
+        return null;
+    }
+}
+
 // Check if user is authenticated
 function checkAuth() {
     return sessionStorage.getItem('adminAuthenticated') === 'true';
@@ -61,6 +104,9 @@ function initAdmin() {
     refreshBtn.addEventListener('click', () => {
         loadTransactions();
     });
+    
+    // Initialize Solana connection
+    initSolanaConnection();
     
     // Initial load of health and analytics
     loadTransactions();
@@ -328,7 +374,9 @@ function loadTransactions() {
         displayTransactions(filteredTransactions);
         
         // Update health summary and analytics
-        updateHealthSummary(transactions);
+        updateHealthSummary(transactions).then(() => {
+            // Health summary updated
+        });
         updateAnalyticsChart(transactions);
     } catch (error) {
         console.error('Error loading transactions:', error);
@@ -338,23 +386,26 @@ function loadTransactions() {
 }
 
 // Update health summary
-function updateHealthSummary(transactions) {
-    // Get initial house balance from localStorage (can be set by admin)
-    const initialHouseBalance = parseFloat(localStorage.getItem('initialHouseBalance') || '100');
+async function updateHealthSummary(transactions) {
+    // Fetch real house wallet balance from blockchain
+    let houseBalance = await fetchHouseWalletBalance();
     
-    // Calculate house balance (sum of all net winnings from house perspective)
-    // Net winnings are from player perspective, so house balance = -sum(netWinnings)
-    let houseBalance = initialHouseBalance;
-    transactions.forEach(t => {
-        // Net winnings positive = player won, house lost
-        // Net winnings negative = player lost, house won
-        houseBalance -= (t.netWinnings || 0);
-    });
+    // Fallback to calculated balance if blockchain fetch fails
+    if (houseBalance === null) {
+        console.warn('Using calculated balance as fallback');
+        const initialHouseBalance = parseFloat(localStorage.getItem('initialHouseBalance') || '100');
+        houseBalance = initialHouseBalance;
+        transactions.forEach(t => {
+            houseBalance -= (t.netWinnings || 0);
+        });
+    }
     
     // Calculate totals
     const totalBets = transactions.reduce((sum, t) => sum + (t.betSize || 0), 0);
     const totalPayouts = transactions.reduce((sum, t) => sum + (t.payout || 0), 0);
-    const totalLiquidity = initialHouseBalance + houseBalance;
+    
+    // Total liquidity is just the current house balance (real wallet balance)
+    const totalLiquidity = houseBalance;
     const profitMargin = totalBets > 0 ? ((totalBets - totalPayouts) / totalBets) * 100 : 0;
     
     // Calculate win rate (house wins when netWinnings < 0 for player)
