@@ -498,7 +498,11 @@ async function updateHealthSummary(transactions) {
     const healthText = document.getElementById('healthText');
     
     if (healthIndicator && healthText) {
-        if (profitMargin >= 3 && houseBalance > initialHouseBalance * 0.5) {
+        // Health status based on profit margin and wallet balance
+        // Healthy: >3% margin and >10 SOL balance
+        // Warning: >0% margin and >0 SOL balance  
+        // Critical: negative margin or 0 balance
+        if (profitMargin >= 3 && houseBalance > 10) {
             healthIndicator.className = 'health-indicator healthy';
             healthText.textContent = 'Healthy';
             healthText.style.color = 'var(--green)';
