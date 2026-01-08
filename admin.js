@@ -339,39 +339,119 @@ function loadTransactions() {
 
 // Update health summary
 function updateHealthSummary(transactions) {
+    // Get initial house balance from localStorage (can be set by admin)
+    const initialHouseBalance = parseFloat(localStorage.getItem('initialHouseBalance') || '100');
+    
     // Calculate house balance (sum of all net winnings from house perspective)
     // Net winnings are from player perspective, so house balance = -sum(netWinnings)
-    let houseBalance = 0;
+    let houseBalance = initialHouseBalance;
     transactions.forEach(t => {
         // Net winnings positive = player won, house lost
         // Net winnings negative = player lost, house won
         houseBalance -= (t.netWinnings || 0);
     });
     
-    // Update house balance display
-    const houseBalanceEl = document.getElementById('houseBalance');
-    if (houseBalanceEl) {
-        if (Math.abs(houseBalance) >= 1) {
-            houseBalanceEl.textContent = houseBalance.toFixed(2) + ' SOL';
-        } else {
-            houseBalanceEl.textContent = houseBalance.toFixed(4) + ' SOL';
-        }
-    }
-    
-    // Calculate health status
+    // Calculate totals
     const totalBets = transactions.reduce((sum, t) => sum + (t.betSize || 0), 0);
     const totalPayouts = transactions.reduce((sum, t) => sum + (t.payout || 0), 0);
+    const totalLiquidity = initialHouseBalance + houseBalance;
     const profitMargin = totalBets > 0 ? ((totalBets - totalPayouts) / totalBets) * 100 : 0;
     
+    // Calculate win rate (house wins when netWinnings < 0 for player)
+    const houseWins = transactions.filter(t => (t.netWinnings || 0) < 0).length;
+    const winRate = transactions.length > 0 ? (houseWins / transactions.length) * 100 : 0;
+    
+    // Calculate time-based net gains/losses
+    const now = Date.now();
+    const day24h = 24 * 60 * 60 * 1000;
+    const day7d = 7 * day24h;
+    const day30d = 30 * day24h;
+    
+    let net24h = 0;
+    let net7d = 0;
+    let net30d = 0;
+    
+    transactions.forEach(t => {
+        const txTime = new Date(t.timestamp).getTime();
+        const timeDiff = now - txTime;
+        const houseNet = -(t.netWinnings || 0);
+        
+        if (timeDiff <= day30d) {
+            net30d += houseNet;
+            if (timeDiff <= day7d) {
+                net7d += houseNet;
+                if (timeDiff <= day24h) {
+                    net24h += houseNet;
+                }
+            }
+        }
+    });
+    
+    // Calculate average bet size
+    const avgBetSize = transactions.length > 0 ? totalBets / transactions.length : 0;
+    
+    // Format amount helper
+    const formatSOL = (amount) => {
+        if (Math.abs(amount) >= 1) {
+            return amount.toFixed(2) + ' SOL';
+        } else if (Math.abs(amount) >= 0.01) {
+            return amount.toFixed(4) + ' SOL';
+        } else {
+            return amount.toFixed(6) + ' SOL';
+        }
+    };
+    
+    // Format percentage helper
+    const formatPercent = (value) => {
+        return value.toFixed(2) + '%';
+    };
+    
+    // Update all displays
+    const updateElement = (id, value, isPercent = false, isCount = false) => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (isCount) {
+                el.textContent = value.toString();
+            } else if (isPercent) {
+                el.textContent = formatPercent(value);
+                // Color code based on value
+                if (id.includes('net')) {
+                    el.style.color = value >= 0 ? 'var(--green)' : 'var(--red)';
+                } else if (id === 'winRate' || id === 'profitMargin') {
+                    el.style.color = value >= 3 ? 'var(--green)' : value >= 0 ? 'var(--orange)' : 'var(--red)';
+                }
+            } else {
+                el.textContent = formatSOL(value);
+                // Color code net gains/losses
+                if (id.includes('net') || id === 'houseBalance') {
+                    el.style.color = value >= 0 ? 'var(--green)' : 'var(--red)';
+                }
+            }
+        }
+    };
+    
+    updateElement('houseBalance', houseBalance);
+    updateElement('totalLiquidity', totalLiquidity);
+    updateElement('winRate', winRate, true);
+    updateElement('profitMargin', profitMargin, true);
+    updateElement('totalVolume', totalBets);
+    updateElement('totalPayouts', totalPayouts);
+    updateElement('net24h', net24h);
+    updateElement('net7d', net7d);
+    updateElement('net30d', net30d);
+    updateElement('totalTransactions', transactions.length, false, true);
+    updateElement('avgBetSize', avgBetSize);
+    
+    // Update health status
     const healthIndicator = document.getElementById('healthIndicator');
     const healthText = document.getElementById('healthText');
     
     if (healthIndicator && healthText) {
-        if (profitMargin >= 3) {
+        if (profitMargin >= 3 && houseBalance > initialHouseBalance * 0.5) {
             healthIndicator.className = 'health-indicator healthy';
             healthText.textContent = 'Healthy';
             healthText.style.color = 'var(--green)';
-        } else if (profitMargin >= 0) {
+        } else if (profitMargin >= 0 && houseBalance > 0) {
             healthIndicator.className = 'health-indicator warning';
             healthText.textContent = 'Warning';
             healthText.style.color = 'var(--orange)';

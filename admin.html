@@ -40,17 +40,67 @@
             <!-- Game Health Summary -->
             <div class="admin-health-summary">
                 <div class="admin-health-card">
-                    <h3>House Money Balance</h3>
+                    <h3>House Wallet Balance</h3>
                     <div class="health-value" id="houseBalance">0.00 SOL</div>
-                    <p class="health-label">Total liquidity</p>
+                    <p class="health-label">Current SOL in wallet</p>
                 </div>
                 <div class="admin-health-card">
-                    <h3>Overall Health Mode</h3>
+                    <h3>Total Liquidity</h3>
+                    <div class="health-value" id="totalLiquidity">0.00 SOL</div>
+                    <p class="health-label" id="liquidityLabel">Initial + House Balance</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>House Win Rate</h3>
+                    <div class="health-value" id="winRate">0.00%</div>
+                    <p class="health-label">Percentage of rounds won</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>Profit Margin</h3>
+                    <div class="health-value" id="profitMargin">0.00%</div>
+                    <p class="health-label">House edge percentage</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>Total Volume</h3>
+                    <div class="health-value" id="totalVolume">0.00 SOL</div>
+                    <p class="health-label">All-time bet volume</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>Total Payouts</h3>
+                    <div class="health-value" id="totalPayouts">0.00 SOL</div>
+                    <p class="health-label">Total paid to players</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>Net Gain/Loss (24h)</h3>
+                    <div class="health-value" id="net24h">0.00 SOL</div>
+                    <p class="health-label" id="net24hLabel">Last 24 hours</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>Net Gain/Loss (7d)</h3>
+                    <div class="health-value" id="net7d">0.00 SOL</div>
+                    <p class="health-label" id="net7dLabel">Last 7 days</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>Net Gain/Loss (30d)</h3>
+                    <div class="health-value" id="net30d">0.00 SOL</div>
+                    <p class="health-label" id="net30dLabel">Last 30 days</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>Overall Health Status</h3>
                     <div class="health-status" id="healthStatus">
                         <span class="health-indicator healthy" id="healthIndicator"></span>
                         <span id="healthText">Healthy</span>
                     </div>
                     <p class="health-label">System status</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>Total Transactions</h3>
+                    <div class="health-value" id="totalTransactions">0</div>
+                    <p class="health-label">All-time game rounds</p>
+                </div>
+                <div class="admin-health-card">
+                    <h3>Average Bet Size</h3>
+                    <div class="health-value" id="avgBetSize">0.00 SOL</div>
+                    <p class="health-label">Per transaction</p>
                 </div>
             </div>
 
