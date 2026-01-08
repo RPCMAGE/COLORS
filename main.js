@@ -1576,17 +1576,23 @@ function setupTwitterShare(winAmount) {
     const winAmountFormatted = winAmount.toFixed(2);
     const currency = gameState.gameMode === 'solana' ? 'SOL' : 'points';
     
-    // Create post text
-    let postText = `I just won ${winAmountFormatted} ${currency} on $COLORS! 🎲`;
+    // Get GIF URL (absolute URL)
+    const basePath = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+    const gifUrl = basePath + '/Assets/Images/ColorsIllustrationAnimated.gif';
+    
+    // Create cleaner, shorter post text
+    let postText = `Just won ${winAmountFormatted} ${currency} on @ColorsOnSol_ 🎲`;
     if (referralCode && referralLink) {
-        postText += ` Check it out and play the beta using my exclusive invite code: ${referralCode} > Play here: ${referralLink}`;
+        postText += `\n\n${referralLink}`;
     } else {
         const baseUrl = window.location.origin + window.location.pathname;
-        postText += ` Check it out: ${baseUrl}`;
+        postText += `\n\n${baseUrl}`;
     }
     
-    // Create X intent URL (still uses twitter.com domain for API)
-    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(postText)}`;
+    // Create X intent URL with GIF URL as a parameter
+    // Note: Twitter Intent API doesn't support automatic media upload via text parameter
+    // The URL parameter will show as a link card, and users can manually attach the GIF
+    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(postText)}&url=${encodeURIComponent(gifUrl)}`;
     
     // Remove old listeners
     const newBtn = twitterShareBtn.cloneNode(true);
